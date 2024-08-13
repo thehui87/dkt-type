@@ -1,4 +1,4 @@
-[![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
+[![](./src/assets/dtbanner.png?raw=true)](https://dwarfknighttechnologies.com/)
 <br />
 
 ![ChartJs](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
