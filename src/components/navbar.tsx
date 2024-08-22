@@ -10,7 +10,7 @@ const Navbar = () => {
     }, [location.pathname]);
 
     return (
-        <div className="flex max-sm:flex-wrap  justify-between py-5 bg-teal-900 text-teal-600 border-b-2 border-teal-800 ">
+        <div className="flex max-sm:flex-wrap  justify-between py-5 bg-teal-900 text-teal-600 border-b-2 border-teal-800 items-center">
             <Link
                 to={'/'}
                 className="max-sm:w-full max-sm:flex max-sm:flex-col max-sm:items-center ml-2 px-2 py-2 rounded-md border-teal-800"

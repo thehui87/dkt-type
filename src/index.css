@@ -52,6 +52,16 @@ code {
         monospace;
 }
 
+.word {
+    padding: 0px 8px;
+    display: inline-block;
+}
+
+.letter {
+    width: 20px;
+    text-align: center;
+    display: inline-block;
+}
 #caret {
     height: 1em;
     animation: caretFlashSmooth 1s infinite;
@@ -64,7 +74,7 @@ code {
     font-size: 2rem;
     display: block;
     top: 12.5px;
-    left: 27.5px;
+    left: 7px;
 }
 
 @keyframes caretFlashSmooth {
