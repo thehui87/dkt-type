@@ -17,11 +17,17 @@ const textBlock =
 //   [Key: string]: CSSProperties
 // }
 
+interface CaretPos {
+    x: number;
+    y: number;
+}
+
 const Home = () => {
     // const [textArray, setTextArray] = useState<Array<string>>([]);
     const [wordArray, setWordArray] = useState<Array<string>>([]);
     const [typedArray, setTypedArray] = useState<Array<string>>([]);
     const [activeWord, setActiveWord] = useState<string>('');
+    const [activeWordHTML, setActiveWorHTML] = useState<Element | null>(null);
     const [inputValue, setInputValue] = useState('');
     const [counter, setCounter] = useState<number>(0);
     const [spaceCounter, setSpaceCounter] = useState<number>(0);
@@ -29,6 +35,10 @@ const Home = () => {
     const [isCorrect, setIsCorrect] = useState<Number>(0);
 
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
+    const [caretPosition, setCaretPosition] = useState<CaretPos>({
+        x: 0,
+        y: 0,
+    });
 
     const timerRef = useRef<TimerHandle>(null);
 
@@ -46,25 +56,10 @@ const Home = () => {
 
         // setCounter(onlyCharacters);
         // setSpaceCounter(spaces);
+        // let inputLength = event.target.value.trim().length;
+        // activeWordHTML.getEle
 
         if (event.target.value.length > 0) {
-            // if(event.target.value.length > 1) {
-            //   if()
-            // if(event.target.value[0])
-            // }
-            // console.log(event);
-            // console.log(event.target);
-            // console.log(event.target.value);
-            // console.log(event.keyCode);
-            // if (
-            //     event.target.value[event.target.value.length - 1] !=
-            //     textBlock[event.target.value.length - 1]
-            // ) {
-            //     setIsCorrect(1); // true
-            //     // document.getall
-            // } else {
-            //     setIsCorrect(2); // true
-            // }
         }
     };
     const handleSpace = (e: any) => {
@@ -73,6 +68,13 @@ const Home = () => {
         }
 
         if (e.keyCode === 32) {
+            console.log({ inputValue });
+            setTypedArray([...typedArray, inputValue]);
+            if (activeWord == inputValue.trim()) {
+                wordValuation();
+            } else {
+                wordValuation('error');
+            }
             setInputValue('');
             setCounter((count) => {
                 return ++count;
@@ -83,21 +85,29 @@ const Home = () => {
     useEffect(() => {
         if (counter < wordArray.length) {
             setActiveWord(wordArray[counter]);
+            setActiveWordHTML();
+            // console.log({ counter });
         } else {
             setIsDisabled(true);
             timerRef.current?.stop();
         }
-    }, [counter]);
+    }, [counter, wordArray]);
+
+    useEffect(() => {
+        console.log({ activeWord });
+        // console.log({ inputValue });
+    }, [activeWord]);
 
     // useEffect(() => {
     //     console.log(inputValue);
     // }, [inputValue]);
+    // useEffect(() => {
+    //     setActiveWord(wordArray[0]);
+    //     // setActiveWordHTML();
+    // }, [wordArray]);
 
     useEffect(() => {
         setWordArray([...textBlock.split(' ')]);
-    }, []);
-    useEffect(() => {
-        setActiveWord(wordArray[0]);
         setIsDisabled(false);
 
         return () => {
@@ -112,6 +122,53 @@ const Home = () => {
         setIsDisabled(false);
 
         timerRef.current?.reset();
+    };
+
+    const setActiveWordHTML = () => {
+        let lastActiveWord = document.querySelector('.word.active');
+        if (lastActiveWord && lastActiveWord.classList.contains('active')) {
+            lastActiveWord.classList.remove('active');
+        }
+
+        let wordList = document.querySelectorAll('.word');
+        wordList[counter].classList.add('active');
+        setActiveWorHTML(wordList[counter]);
+    };
+
+    const wordValuation = (value: string = '') => {
+        let lastActiveWord = document.querySelector('.word.active');
+        if (lastActiveWord && lastActiveWord.classList.contains('active')) {
+            lastActiveWord.classList.add('typed');
+            if (value) lastActiveWord.classList.add(value);
+        }
+    };
+
+    useEffect(() => {
+        console.log(activeWordHTML?.getBoundingClientRect());
+        let boundingRect: DOMRect =
+            activeWordHTML?.getBoundingClientRect() as DOMRect;
+        // if()
+        let a: CaretPos = {
+            x: boundingRect?.x - 136,
+            y: boundingRect?.bottom - boundingRect?.y - 30,
+        };
+        setCaretPosition(a);
+        console.log(a);
+        // 7 + counter * 20 + spaceCounter * 16
+    }, [activeWordHTML]);
+
+    //   const letterValuation = (value: string = '') => {
+    //     let currentActiveWord = document.querySelector('.word.active');
+
+    //     if (lastActiveWord && lastActiveWord.classList.contains('active')) {
+    //         lastActiveWord.classList.add('typed');
+    //         if (value) lastActiveWord.classList.add(value);
+    //     }
+    // };
+
+    const getWPM = () => {
+        let wpm = wordArray.length / timerRef.current?.mindecimal()!;
+        return Math.round(wpm);
     };
 
     const onFocus = () => setInputFocus(true);
@@ -140,7 +197,9 @@ const Home = () => {
                             id="caret"
                             className="bg-orange-400"
                             style={{
-                                left: `${7 + counter * 20 + spaceCounter * 16}px`,
+                                // left: `${7 + counter * 20 + spaceCounter * 16}px`,
+                                left: `${caretPosition.x}px`,
+                                top: `${caretPosition.y}px`,
                                 visibility: inputFocus ? 'visible' : 'hidden',
                             }}
                         ></div>
@@ -181,6 +240,17 @@ const Home = () => {
                                 <RxReset />
                             </button>
                         </Tooltip>
+                    </div>
+                    {/* Stats */}
+                    <div className="flex flex-col">
+                        <div>
+                            {/* wordper minutes */}
+                            {isDisabled && (
+                                <div>{getWPM()} words per minute. </div>
+                            )}
+                        </div>
+
+                        <div>{isDisabled && typedArray.join(' ')}</div>
                     </div>
                 </div>
             </div>
