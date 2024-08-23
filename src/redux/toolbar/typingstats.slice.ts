@@ -26,7 +26,7 @@ const initialState: ToolbarState = {
 };
 
 // Create slice
-const toolbarSlice = createSlice({
+const typingStatsSlice = createSlice({
     name: 'counter',
     initialState,
     reducers: {
@@ -76,7 +76,7 @@ export const {
     setQuoteLengthValueToggle,
     setShowLeftTabs,
     setShowRightTabs,
-} = toolbarSlice.actions;
+} = typingStatsSlice.actions;
 
 // Export reducer
-export default toolbarSlice.reducer;
+export default typingStatsSlice.reducer;

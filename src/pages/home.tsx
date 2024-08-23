@@ -5,6 +5,17 @@ import Tooltip from '../components/Tooltip';
 import Timer, { TimerHandle } from '../components/timer';
 import ConfigToolbar from '../components/toolbar';
 
+// declare global {
+//     namespace JSX {
+//         interface IntrinsicElements {
+//             letter: React.DetailedHTMLProps<
+//                 React.HTMLAttributes<HTMLElement>,
+//                 HTMLElement
+//             >;
+//         }
+//     }
+// }
+
 // const textBlock =
 //     'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt asperiores, dolorem nisi praesentium eligendi est consectetur ipsum veritatis fuga similique dolor magni obcaecati aut id, aperiam iure doloribus reprehenderit officia.';
 const textBlock =
@@ -35,8 +46,9 @@ const Home = () => {
     const [inputFocus, setInputFocus] = useState<boolean>(false);
     const [letterArray, setLetterArray] = useState<Array<Element>>([]);
     const [space, setSpace] = useState<boolean>(false);
-    // const [backspace, setBackspace] = useState<boolean>(false);
     const [incorrectCounter, setIncorrectCounter] = useState<number>(0);
+    // const [activeLetter, setActiveLetter] = useState<string>('');
+    // const [activeLetterCounter, setActiveLetterCounter] = useState<number>(0);
 
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const [caretPosition, setCaretPosition] = useState<CaretPos>({
@@ -90,7 +102,7 @@ const Home = () => {
                     if (isCorrect) letterArray[index].classList.add('correct');
                     else {
                         letterArray[index].classList.add('incorrect');
-                        setIncorrectCounter(incorrectCounter + 1);
+                        // setIncorrectCounter(incorrectCounter + 1); // TODO: this needs to be changed cause if multiple wrong characters are typed then this counts duplicates when pressing backspace
                     }
                 }
                 // console.log('Y: ', letterArray[index]);
@@ -149,7 +161,10 @@ const Home = () => {
                     textContainerRef.current.offsetLeft +
                     inputValue.trim().length * 20 +
                     7,
-                y: boundingRect?.top - textContainerRef.current.offsetTop + 10,
+                y:
+                    Math.round(
+                        boundingRect?.top - textContainerRef.current.offsetTop
+                    ) + 10,
             };
             setCaretPosition(a);
             // console.log('caretPos:', a);
@@ -186,6 +201,7 @@ const Home = () => {
         setWordArray([...textBlock.split(' ')]);
         setIsDisabled(false);
         setIncorrectCounter(0);
+        // setActiveLetterCounter(0);
         return () => {
             timerRef.current?.reset();
         };
@@ -220,6 +236,7 @@ const Home = () => {
         setIsDisabled(false);
         setTypedArray([]);
         setIncorrectCounter(0);
+        // setActiveLetterCounter(0);
 
         timerRef.current?.reset();
     };
@@ -237,7 +254,10 @@ const Home = () => {
     }, [activeWordHTML]);
 
     const getWPM = () => {
-        let wpm = typedArray.length / timerRef.current?.mindecimal()!;
+        let correctWords = document.querySelectorAll(
+            '.word.typed:not(.error)'
+        ).length;
+        let wpm = correctWords / timerRef.current?.mindecimal()!;
         return Math.round(wpm);
     };
 
@@ -247,12 +267,31 @@ const Home = () => {
         let incorrectCharacters =
             document.querySelectorAll('.letter.incorrect').length;
         let totalCharacters = wordArray.join('').length;
+        let missedCharacters = document.querySelectorAll(
+            'span.letter:not(.correct):not(.incorrect)'
+        ).length;
+        let extraCharacters = 0;
+        for (let i = 0; i < wordArray.length; i++) {
+            if (wordArray[i].length < typedArray[i].length) {
+                extraCharacters += typedArray[i].length - wordArray[i].length;
+            }
+        }
+        // let extraCharacters =
 
-        return [
-            ((correctCharacters / totalCharacters) * 100).toFixed(0),
-            correctCharacters,
-            incorrectCharacters,
-        ];
+        return {
+            accuracy: Math.round(
+                (1 -
+                    (incorrectCounter +
+                        incorrectCharacters +
+                        missedCharacters) /
+                        correctCharacters) *
+                    100
+            ),
+            correct: correctCharacters,
+            incorrect: incorrectCharacters,
+            extra: extraCharacters,
+            missed: missedCharacters,
+        };
     };
 
     const onFocus = () => setInputFocus(true);
@@ -304,26 +343,27 @@ const Home = () => {
                             onKeyDown={handleSpace}
                             disabled={isDisabled}
                         />
-                        {wordArray.map((word: string, index: number) => (
-                            <div key={index} className={'word'}>
-                                {word
-                                    .split('')
-                                    .map(
-                                        (
-                                            letter: string,
-                                            indexLetter: number
-                                        ) => (
-                                            <span
-                                                key={indexLetter}
-                                                className={'letter'}
-                                            >
-                                                {/* ${isCorrect == 0 ? '' : isCorrect == 1 ? 'correct' : 'incorrect'} */}
-                                                {letter}
-                                            </span>
-                                        )
-                                    )}
-                            </div>
-                        ))}
+                        <div id="words">
+                            {wordArray.map((word: string, index: number) => (
+                                <div key={index} className={'word'}>
+                                    {word
+                                        .split('')
+                                        .map(
+                                            (
+                                                letterChar: string,
+                                                indexLetter: number
+                                            ) => (
+                                                <span
+                                                    key={indexLetter}
+                                                    className={'letter'}
+                                                >
+                                                    {letterChar}
+                                                </span>
+                                            )
+                                        )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                     {/* Reset Button */}
                     <div className="text-teal-200 text-2xl mt-5">
@@ -343,24 +383,28 @@ const Home = () => {
                                     {getWPM()} words per minute.{' '}
                                 </div>
                                 <div className={`${statsStyle}`}>
-                                    Accuracy: {getAccuracy()[0]}%
+                                    Accuracy: {getAccuracy().accuracy}%
                                 </div>
                                 <div className={`${statsStyle}`}>
-                                    Correct: {getAccuracy()[1]}
+                                    Correct: {getAccuracy().correct}
                                 </div>
                                 <div className={`${statsStyle}`}>
-                                    Incorrect: {getAccuracy()[2]}
+                                    Incorrect: {getAccuracy().incorrect}
                                 </div>
-                                <div className={`${statsStyle}`}>
-                                    Characters: {typedArray.join('').length}/
-                                    {wordArray.join('').length}
-                                </div>
+                                <Tooltip
+                                    message="Correct/incorrect/extra/missed"
+                                    position="top"
+                                >
+                                    <div className={`${statsStyle}`}>
+                                        Characters: {getAccuracy().correct}/
+                                        {getAccuracy().incorrect}/
+                                        {getAccuracy().extra}/
+                                        {getAccuracy().missed}
+                                    </div>
+                                </Tooltip>
                                 <div className={`${statsStyle}`}>
                                     Wrong Key: {incorrectCounter}
                                 </div>
-                                {/* <div className={`${statsStyle}`}>
-                                    Words: {typedArray.join("").length}/{wordArray.join("").length}
-                                </div> */}
                             </div>
                         )}
                         <div className={'flex flex-col justify-start'}>

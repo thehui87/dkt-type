@@ -6,7 +6,7 @@
 ![Express](https://img.shields.io/badge/-Express-373737?style=for-the-badge&logo=Express&logoColor=white)
 ![Firebase](https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black)
 ![Fontawesome](https://img.shields.io/badge/fontawesome-538DD7?style=for-the-badge&logo=fontawesome&logoColor=white)
-![Fontawesome](https://img.shields.io/badge/flaticon-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
+![React-icons](https://img.shields.io/badge/reacticons-FF6384?style=for-the-badge&logo=reacticons&logoColor=white)
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![JQuery](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/-MongoDB-13aa52?style=for-the-badge&logo=mongodb&logoColor=white)
@@ -40,11 +40,11 @@ Dwarftype is a minimalistic and customizable [typing test](https://dwarfknightte
 
 # Discord bot
 
-On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign optional roles based on typing performance and challenge completion. You can find its code over at https://github.com/monkeytypegame/monkeytype-bot.
+On the [Dwarftype Discord server](https://www.discord.gg/dwarftype), we added a Discord bot to auto-assign optional roles based on typing performance and challenge completion. You can find its code over at https://github.com/thehui87/dkt-type/.
 
 # Bug report or Feature request
 
-If you encounter a bug or have a feature request, [send us an email](mailto:contact@monkeytype.com), [create an issue](https://github.com/monkeytypegame/monkeytype/issues), [create a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug or have a feature request, [send us an email](mailto:info@dwarfknight.com), [create an issue](https://github.com/thehui87/dkt-type/issues), [create a discussion thread](https://github.com/thehui87/dkt-type/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
 # Want to Contribute?
 
@@ -60,7 +60,7 @@ To report a security vulnerability, please refer to [SECURITY.md](./docs/SECURIT
 
 # Credits
 
-[Montydrei](https://www.reddit.com/user/montydrei) for the name suggestion.
+[Dwarftype](https://www.reddit.com/user/dwarftype) for the name suggestion.
 
 Everyone who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
 
@@ -68,7 +68,7 @@ All of the [contributors](https://github.com/monkeytypegame/monkeytype/graphs/co
 
 # Support
 
-If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).
+If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/dwarftype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).
 
 1. Monokai
    Description: A classic dark theme with vibrant colors, originally from Sublime Text.
