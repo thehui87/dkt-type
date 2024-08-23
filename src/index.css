@@ -56,6 +56,10 @@ code {
     padding: 0px 8px;
     display: inline-block;
 }
+/* var(--error-color) */
+.word.typed.error {
+    border-bottom: 2px dashed red;
+}
 
 .letter {
     width: 20px;
