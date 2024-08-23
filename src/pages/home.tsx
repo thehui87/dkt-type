@@ -17,6 +17,8 @@ const textBlock =
 //   [Key: string]: CSSProperties
 // }
 
+const statsStyle = 'mr-4';
+
 interface CaretPos {
     x: number;
     y: number;
@@ -33,6 +35,7 @@ const Home = () => {
     const [spaceCounter, setSpaceCounter] = useState<number>(0);
     const [inputFocus, setInputFocus] = useState<boolean>(false);
     const [isCorrect, setIsCorrect] = useState<Number>(0);
+    const [letterArray, setLetterArray] = useState<Array<Element>>([]);
 
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const [caretPosition, setCaretPosition] = useState<CaretPos>({
@@ -59,16 +62,33 @@ const Home = () => {
         // let inputLength = event.target.value.trim().length;
         // activeWordHTML.getEle
 
-        if (event.target.value.length > 0) {
-        }
+        // if (event.target.value.trim().length > 0) {
+        // if(event.target.value.trim())
     };
+
+    useEffect(() => {
+        inputValue
+            .trim()
+            .split('')
+            .forEach((value: string, index: number) => {
+                const isCorrect = value === activeWord[index];
+                if (letterArray[index]) {
+                    if (isCorrect) letterArray[index].classList.add('correct');
+                    else letterArray[index].classList.add('incorrect');
+                }
+                // console.log('Y: ', letterArray[index]);
+
+                // if (isCorrect) console.log('Y: ', letterArray[index]);
+                // else console.log('N:', letterArray[index]);
+            });
+    }, [inputValue]);
     const handleSpace = (e: any) => {
         if (inputValue.length > 1 && inputValue.trim().length == 0) {
             setInputValue('');
         }
 
         if (e.keyCode === 32) {
-            console.log({ inputValue });
+            // console.log({ inputValue });
             setTypedArray([...typedArray, inputValue]);
             if (activeWord == inputValue.trim()) {
                 wordValuation();
@@ -80,31 +100,27 @@ const Home = () => {
                 return ++count;
             });
         }
+        // backspace
+        if (e.keyCode === 8) {
+            let index = inputValue.length - 1;
+            if (letterArray[index]) {
+                letterArray[index].classList.remove(
+                    ...letterArray[index].classList
+                );
+                letterArray[index].classList.add('letter');
+            }
+        }
     };
 
     useEffect(() => {
         if (counter < wordArray.length) {
             setActiveWord(wordArray[counter]);
             setActiveWordHTML();
-            // console.log({ counter });
         } else {
             setIsDisabled(true);
             timerRef.current?.stop();
         }
     }, [counter, wordArray]);
-
-    useEffect(() => {
-        console.log({ activeWord });
-        // console.log({ inputValue });
-    }, [activeWord]);
-
-    // useEffect(() => {
-    //     console.log(inputValue);
-    // }, [inputValue]);
-    // useEffect(() => {
-    //     setActiveWord(wordArray[0]);
-    //     // setActiveWordHTML();
-    // }, [wordArray]);
 
     useEffect(() => {
         setWordArray([...textBlock.split(' ')]);
@@ -116,6 +132,8 @@ const Home = () => {
     }, []);
 
     const resetBoard = () => {
+        setWordArray(() => [...textBlock.split(' ')]);
+
         setCounter(0);
         setActiveWord(wordArray[0]);
         setInputValue('');
@@ -133,6 +151,8 @@ const Home = () => {
         let wordList = document.querySelectorAll('.word');
         wordList[counter].classList.add('active');
         setActiveWorHTML(wordList[counter]);
+        let letterArray = wordList[counter].querySelectorAll('.letter');
+        setLetterArray([...letterArray]);
     };
 
     const wordValuation = (value: string = '') => {
@@ -144,31 +164,33 @@ const Home = () => {
     };
 
     useEffect(() => {
-        console.log(activeWordHTML?.getBoundingClientRect());
         let boundingRect: DOMRect =
             activeWordHTML?.getBoundingClientRect() as DOMRect;
-        // if()
+
         let a: CaretPos = {
             x: boundingRect?.x - 136,
             y: boundingRect?.bottom - boundingRect?.y - 30,
         };
         setCaretPosition(a);
-        console.log(a);
-        // 7 + counter * 20 + spaceCounter * 16
     }, [activeWordHTML]);
 
-    //   const letterValuation = (value: string = '') => {
-    //     let currentActiveWord = document.querySelector('.word.active');
-
-    //     if (lastActiveWord && lastActiveWord.classList.contains('active')) {
-    //         lastActiveWord.classList.add('typed');
-    //         if (value) lastActiveWord.classList.add(value);
-    //     }
-    // };
-
     const getWPM = () => {
-        let wpm = wordArray.length / timerRef.current?.mindecimal()!;
+        let wpm = typedArray.length / timerRef.current?.mindecimal()!;
         return Math.round(wpm);
+    };
+
+    const getAccuracy = () => {
+        let correctCharacters =
+            document.querySelectorAll('.letter.correct').length;
+        let incorrectCharacters =
+            document.querySelectorAll('.letter.incorrect').length;
+        let totalCharacters = wordArray.join('').length;
+
+        return [
+            ((correctCharacters / totalCharacters) * 100).toFixed(0),
+            correctCharacters,
+            incorrectCharacters,
+        ];
     };
 
     const onFocus = () => setInputFocus(true);
@@ -224,8 +246,9 @@ const Home = () => {
                                         ) => (
                                             <span
                                                 key={indexLetter}
-                                                className={`letter ${isCorrect == 0 ? '' : isCorrect == 1 ? 'correct' : 'incorrect'}`}
+                                                className={'letter'}
                                             >
+                                                {/* ${isCorrect == 0 ? '' : isCorrect == 1 ? 'correct' : 'incorrect'} */}
                                                 {letter}
                                             </span>
                                         )
@@ -243,13 +266,31 @@ const Home = () => {
                     </div>
                     {/* Stats */}
                     <div className="flex flex-col">
-                        <div>
-                            {/* wordper minutes */}
-                            {isDisabled && (
-                                <div>{getWPM()} words per minute. </div>
-                            )}
-                        </div>
+                        {isDisabled && (
+                            <div className="flex flex-row ">
+                                {/* wordper minutes */}
 
+                                <div className={`${statsStyle}`}>
+                                    {getWPM()} words per minute.{' '}
+                                </div>
+                                <div className={`${statsStyle}`}>
+                                    Accuracy: {getAccuracy()[0]}%
+                                </div>
+                                <div className={`${statsStyle}`}>
+                                    Correct: {getAccuracy()[1]}
+                                </div>
+                                <div className={`${statsStyle}`}>
+                                    Incorrect: {getAccuracy()[2]}
+                                </div>
+                                <div className={`${statsStyle}`}>
+                                    Characters: {typedArray.join('').length}/
+                                    {wordArray.join('').length}
+                                </div>
+                                {/* <div className={`${statsStyle}`}>
+                                    Words: {typedArray.join("").length}/{wordArray.join("").length}
+                                </div> */}
+                            </div>
+                        )}
                         <div>{isDisabled && typedArray.join(' ')}</div>
                     </div>
                 </div>

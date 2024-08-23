@@ -62,6 +62,13 @@ code {
     text-align: center;
     display: inline-block;
 }
+
+.letter.correct {
+    color: #99f6e4;
+}
+.letter.incorrect {
+    color: red;
+}
 #caret {
     height: 1em;
     animation: caretFlashSmooth 1s infinite;

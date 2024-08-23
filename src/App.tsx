@@ -7,6 +7,7 @@ import Home from './pages/home';
 import About from './pages/about';
 import Profile from './pages/profile';
 import MyFooter from './components/footer';
+import Test from './pages/test';
 
 function App() {
     // let location = useLocation();
@@ -25,6 +26,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/about" element={<About />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/test" element={<Test />} />
                     </Routes>
                 </BrowserRouter>
             </div>
