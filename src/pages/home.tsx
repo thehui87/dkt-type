@@ -1,4 +1,10 @@
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import {
+    useEffect,
+    useState,
+    useRef,
+    useLayoutEffect,
+    useCallback,
+} from 'react';
 import { HeadingTag } from '../components/headingTag';
 import { RxReset } from 'react-icons/rx';
 import Tooltip from '../components/Tooltip';
@@ -6,7 +12,11 @@ import Timer, { TimerHandle } from '../components/timer';
 import ConfigToolbar from '../components/toolbar';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
-import { setStats, resetStats } from '../redux/toolbar/typingstats.slice';
+import {
+    setStats,
+    resetStats,
+    TypingStatsState,
+} from '../redux/toolbar/typingstats.slice';
 
 // declare global {
 //     namespace JSX {
@@ -39,18 +49,6 @@ interface CaretPos {
     y: number;
 }
 
-interface TypingStatsState {
-    accuracy: number;
-    correctCharacters: number;
-    incorrectCharacters: number;
-    extraCharacters: number;
-    missedCharacters: number;
-    correctWords: number;
-    totalWords: number;
-    wrongKeystrokes: number;
-    wpm: number;
-    time: number;
-}
 const Home = () => {
     const [wordArray, setWordArray] = useState<Array<string>>([]);
     const [typedArray, setTypedArray] = useState<Array<string>>([]);
@@ -98,7 +96,91 @@ const Home = () => {
         setInputValue(event.target.value.trim());
     };
 
+    const updateCaretPosition = useCallback(() => {
+        let boundingRect: DOMRect =
+            activeWordHTML?.getBoundingClientRect() as DOMRect;
+        if (textContainerRef.current) {
+            let a: CaretPos = {
+                x:
+                    boundingRect?.left -
+                    textContainerRef.current.offsetLeft +
+                    inputValue.trim().length * 20 +
+                    7,
+                y:
+                    Math.round(
+                        boundingRect?.top - textContainerRef.current.offsetTop
+                    ) + 0,
+            };
+            // if (a.y > 80) {
+            //     let wordContainer = document.getElementById('words');
+            //     if (wordContainer !== null) {
+            //         let temp = wordContainer.style.top + 64;
+            //         wordContainer.style.top = `${-temp}px`;
+            //     }
+            //     updateCaretPosition();
+            // }
+            setCaretPosition(a);
+        }
+    }, [activeWordHTML, inputValue]);
+
     useEffect(() => {
+        const letterValuation = () => {
+            let lastLetterWordIndex = inputValue.trim().length - 1;
+            if (oldInputValue.trim().length < inputValue.trim().length) {
+                if (lastLetterWordIndex >= 0) {
+                    if (
+                        activeWord[lastLetterWordIndex] ===
+                        inputValue.trim()[lastLetterWordIndex]
+                    ) {
+                        letterArray[lastLetterWordIndex].classList.add(
+                            'correct'
+                        );
+                    } else {
+                        // if inputValue.length > activeWord.length then add dynamic span with class "incorrect extra"
+                        if (inputValue.trim().length > activeWord.length) {
+                            let extraSpanTag = document.createElement('span');
+                            extraSpanTag.className = 'incorrect extra';
+                            extraSpanTag.innerHTML =
+                                inputValue.trim()[lastLetterWordIndex];
+                            activeWordHTML?.appendChild(extraSpanTag);
+                        } else {
+                            // incorrect letter typed
+                            letterArray[lastLetterWordIndex].classList.add(
+                                'incorrect'
+                            );
+                            incorrectLetterArray[
+                                lastLetterWordIndex
+                            ].innerHTML =
+                                inputValue.trim()[lastLetterWordIndex];
+                        }
+                        setIncorrectCounter(incorrectCounter + 1);
+                    }
+                }
+            } else {
+                if (inputValue.trim().length >= activeWord.length) {
+                    //  delete incorrect extra
+                    if (activeWordHTML && activeWordHTML.lastElementChild) {
+                        activeWordHTML.removeChild(
+                            activeWordHTML.lastElementChild
+                        );
+                    }
+                } else {
+                    // delete incorrect letter
+                    if (letterArray[lastLetterWordIndex + 1] && !space) {
+                        letterArray[lastLetterWordIndex + 1].classList.remove(
+                            ...letterArray[lastLetterWordIndex + 1].classList
+                        );
+                        letterArray[lastLetterWordIndex + 1].classList.add(
+                            'letter'
+                        );
+                        incorrectLetterArray[
+                            lastLetterWordIndex + 1
+                        ].innerHTML = '';
+                    }
+                }
+            }
+        };
+
         letterValuation();
         updateCaretPosition();
     }, [inputValue]);
@@ -124,35 +206,19 @@ const Home = () => {
                 setSpace(true);
             }
         } else {
-            for (
-                let i = e.target.value.trim().length;
-                i < letterArray.length;
-                i++
-            ) {
-                letterArray[i].classList.remove(...letterArray[i].classList);
-                letterArray[i].classList.add('letter');
-            }
+            // for (
+            //     let i = e.target.value.trim().length;
+            //     i < letterArray.length;
+            //     i++
+            // ) {
+            //     letterArray[i].classList.remove(...letterArray[i].classList);
+            //     letterArray[i].classList.add('letter');
+            // }
             setSpace(false);
         }
-    };
 
-    const updateCaretPosition = () => {
-        let boundingRect: DOMRect =
-            activeWordHTML?.getBoundingClientRect() as DOMRect;
-        if (textContainerRef.current) {
-            let a: CaretPos = {
-                x:
-                    boundingRect?.left -
-                    textContainerRef.current.offsetLeft +
-                    inputValue.trim().length * 20 +
-                    7,
-                y:
-                    Math.round(
-                        boundingRect?.top - textContainerRef.current.offsetTop
-                    ) + 0,
-            };
-            setCaretPosition(a);
-        }
+        // if (e.keyCode === 8) {
+        // }
     };
 
     useEffect(() => {
@@ -183,28 +249,12 @@ const Home = () => {
                 lastActiveWord.classList.remove('active');
             }
             setIsDisabled(true);
-            getAccuracy();
+            setTypingStats();
             timerRef.current?.stop();
         }
     }, [counter, wordArray]);
 
-    useEffect(() => {
-        resetBoard();
-        return () => {
-            timerRef.current?.reset();
-        };
-    }, []);
-
-    useLayoutEffect(() => {
-        // function updateSize() {
-        //   setSize([window.innerWidth, window.innerHeight]);
-        // }
-        window.addEventListener('resize', updateCaretPosition);
-        updateCaretPosition();
-        return () => window.removeEventListener('resize', updateCaretPosition);
-    }, []);
-
-    const resetBoard = () => {
+    const resetBoard = useCallback(() => {
         let lettersList = document.querySelectorAll('.letter');
         for (let i = 0; i < lettersList.length; i++) {
             lettersList[i].classList.remove(...lettersList[i].classList);
@@ -238,7 +288,23 @@ const Home = () => {
         timerRef.current?.reset();
         textContainerRef.current?.focus();
         dispatch(resetStats());
-    };
+    }, []);
+
+    useEffect(() => {
+        resetBoard();
+        return () => {
+            timerRef.current?.reset();
+        };
+    }, [resetBoard]);
+
+    useLayoutEffect(() => {
+        // function updateSize() {
+        //   setSize([window.innerWidth, window.innerHeight]);
+        // }
+        window.addEventListener('resize', updateCaretPosition);
+        updateCaretPosition();
+        return () => window.removeEventListener('resize', updateCaretPosition);
+    }, [updateCaretPosition]);
 
     const wordValuation = (value: string = '') => {
         let lastActiveWord = document.querySelector('.word.active');
@@ -247,69 +313,8 @@ const Home = () => {
             if (value) lastActiveWord.classList.add(value);
         }
     };
-    const letterValuation = () => {
-        let lastLetterWordIndex = inputValue.trim().length - 1;
-        if (oldInputValue.trim().length < inputValue.trim().length) {
-            if (lastLetterWordIndex >= 0) {
-                if (
-                    activeWord[lastLetterWordIndex] ===
-                    inputValue.trim()[lastLetterWordIndex]
-                ) {
-                    letterArray[lastLetterWordIndex].classList.add('correct');
-                } else {
-                    // if inputValue.length > activeWord.length then add dynamic span with class "incorrect extra"
-                    if (inputValue.trim().length > activeWord.length) {
-                        let extraSpanTag = document.createElement('span');
-                        extraSpanTag.className = 'incorrect extra';
-                        extraSpanTag.innerHTML =
-                            inputValue.trim()[lastLetterWordIndex];
-                        activeWordHTML?.appendChild(extraSpanTag);
-                    } else {
-                        // incorrect letter typed
-                        letterArray[lastLetterWordIndex].classList.add(
-                            'incorrect'
-                        );
-                        incorrectLetterArray[lastLetterWordIndex].innerHTML =
-                            inputValue.trim()[lastLetterWordIndex];
-                    }
-                    setIncorrectCounter(incorrectCounter + 1);
-                }
-            }
-        } else {
-            if (inputValue.trim().length >= activeWord.length) {
-                //  delete incorrect extra
-                if (activeWordHTML && activeWordHTML.lastElementChild) {
-                    activeWordHTML.removeChild(activeWordHTML.lastElementChild);
-                }
-            } else {
-                // delete incorrect letter
-                if (letterArray[lastLetterWordIndex + 1] && !space) {
-                    letterArray[lastLetterWordIndex + 1].classList.remove(
-                        ...letterArray[lastLetterWordIndex + 1].classList
-                    );
-                    letterArray[lastLetterWordIndex + 1].classList.add(
-                        'letter'
-                    );
-                    incorrectLetterArray[lastLetterWordIndex + 1].innerHTML =
-                        '';
-                }
-            }
-        }
-    };
 
-    useEffect(() => {
-        updateCaretPosition();
-    }, [activeWordHTML]);
-
-    // const getWPM = () => {
-    //     let correctWords = document.querySelectorAll(
-    //         '.word.typed:not(.error)'
-    //     ).length;
-    //     let wpm = correctWords / timerRef.current?.mindecimal()!;
-    //     return Math.round(wpm);
-    // };
-
-    const getAccuracy = () => {
+    const setTypingStats = () => {
         let correctCharacters: number =
             document.querySelectorAll('.letter.correct').length;
         let incorrectCharacters =
@@ -448,7 +453,10 @@ const Home = () => {
                                     {wpm} words per minute.{' '}
                                 </div>
                                 <div className={`${statsStyle}`}>
-                                    Accuracy: {accuracy}%
+                                    Accuracy:{' '}
+                                    {accuracy > 0
+                                        ? `${accuracy}%`
+                                        : 'Too many errors!'}
                                 </div>
                                 <Tooltip
                                     message="Correct words/Total words"
@@ -492,6 +500,7 @@ export default Home;
 
 // TODO: on backspace go back to previous word
 // TODO: Clock change to timer
+// TODO: Auto scroll
 // TODO: dynamic word addition on reset
 // TODO: toolbar each button functionality
 // TODO: generic modal component

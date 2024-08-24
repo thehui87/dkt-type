@@ -191,6 +191,7 @@ If you wish to support further development and feel extra awesome, you can [dona
 
 // TODO: on backspace go back to previous word
 // TODO: Clock change to timer
+// TODO: Auto scroll
 // TODO: dynamic word addition on reset
 // TODO: toolbar each button functionality
 // TODO: generic modal component

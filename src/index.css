@@ -52,6 +52,11 @@ code {
         monospace;
 }
 
+#words {
+    position: relative;
+    pointer-events: none;
+}
+
 .word {
     padding: 0px 8px;
     display: inline-block;
@@ -86,6 +91,7 @@ code {
     text-align: center;
     display: inline-block;
     pointer-events: none;
+    user-select: none;
 }
 
 .letter.correct {

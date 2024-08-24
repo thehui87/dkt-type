@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface TypingStatsState {
+export interface TypingStatsState {
     accuracy: number;
     correctCharacters: number;
     incorrectCharacters: number;
