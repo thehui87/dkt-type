@@ -72,7 +72,7 @@ const Home = () => {
 
     useEffect(() => {
         letterValuation();
-        updateCartePosition();
+        updateCaretPosition();
     }, [inputValue]);
 
     const handleSpace = (e: any) => {
@@ -105,7 +105,7 @@ const Home = () => {
         }
     };
 
-    const updateCartePosition = () => {
+    const updateCaretPosition = () => {
         let boundingRect: DOMRect =
             activeWordHTML?.getBoundingClientRect() as DOMRect;
         // console.log({ boundingRect });
@@ -167,9 +167,9 @@ const Home = () => {
         // function updateSize() {
         //   setSize([window.innerWidth, window.innerHeight]);
         // }
-        window.addEventListener('resize', updateCartePosition);
-        updateCartePosition();
-        return () => window.removeEventListener('resize', updateCartePosition);
+        window.addEventListener('resize', updateCaretPosition);
+        updateCaretPosition();
+        return () => window.removeEventListener('resize', updateCaretPosition);
     }, []);
 
     const resetBoard = () => {
@@ -228,7 +228,7 @@ const Home = () => {
     };
 
     useEffect(() => {
-        updateCartePosition();
+        updateCaretPosition();
     }, [activeWordHTML]);
 
     const getWPM = () => {
@@ -401,3 +401,13 @@ const Home = () => {
 };
 
 export default Home;
+
+// TODO: put stats in redux
+// TODO: getWPM and getAccuracy remove functions from home
+// TODO: add extra characters after the word
+// TODO: add wrong character on top of the word
+// TODO: on backspace go back to previous word
+// TODO: Clock change to timer
+// TODO: dynamic word addition on reset
+// TODO: toolbar each button functionality
+// TODO: generic modal component
