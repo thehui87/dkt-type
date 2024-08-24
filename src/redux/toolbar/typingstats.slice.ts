@@ -1,82 +1,75 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface ToolbarState {
-    value: number;
-    punctuationBool: boolean;
-    numberBool: boolean;
-    toggleMenuValue: string;
-    toggleTimerValue: string;
-    toggleTexLengthValue: string;
-    toggleQuoteLengthValue: string;
-    showLeftTabs: boolean;
-    showRightTabs: boolean;
+interface TypingStatsState {
+    accuracy: number;
+    correctCharacters: number;
+    incorrectCharacters: number;
+    extraCharacters: number;
+    missedCharacters: number;
+    correctWords: number;
+    totalWords: number;
+    wrongKeystrokes: number;
+    wpm: number;
+    time: number;
 }
 
 // Initial state
-const initialState: ToolbarState = {
-    value: 0,
-    punctuationBool: false,
-    numberBool: false,
-    toggleMenuValue: 'time',
-    toggleTimerValue: '30',
-    toggleTexLengthValue: '50',
-    toggleQuoteLengthValue: 'all',
-    showLeftTabs: true,
-    showRightTabs: true,
+const initialState: TypingStatsState = {
+    accuracy: 0,
+    correctCharacters: 0,
+    incorrectCharacters: 0,
+    extraCharacters: 0,
+    missedCharacters: 0,
+    correctWords: 0,
+    totalWords: 0,
+    wrongKeystrokes: 0,
+    wpm: 0,
+    time: 0,
 };
 
 // Create slice
 const typingStatsSlice = createSlice({
-    name: 'counter',
+    name: 'typingstats',
     initialState,
     reducers: {
-        // increment: (state) => {
-        //     state.value += 1;
-        // },
-        // decrement: (state) => {
-        //     state.value -= 1;
-        // },
-        // incrementByAmount: (state, action: PayloadAction<number>) => {
-        //     state.value += action.payload;
-        // },
-        setPunctuationToggle: (state, action: PayloadAction<boolean>) => {
-            state.punctuationBool = action.payload;
+        setStats: (state, action: PayloadAction<TypingStatsState>) => {
+            state.correctCharacters = action.payload?.correctCharacters;
+            state.incorrectCharacters = action.payload?.incorrectCharacters;
+            state.extraCharacters = action.payload?.extraCharacters;
+            state.missedCharacters = action.payload?.missedCharacters;
+            state.correctWords = action.payload?.correctWords;
+            state.totalWords = action.payload?.totalWords;
+            state.wrongKeystrokes = action.payload?.wrongKeystrokes;
+            state.accuracy = Math.round(
+                (1 -
+                    (action.payload?.wrongKeystrokes +
+                        action.payload?.incorrectCharacters +
+                        action.payload?.extraCharacters +
+                        action.payload?.missedCharacters) /
+                        action.payload?.correctCharacters) *
+                    100
+            );
+            state.wpm = Math.round(
+                action.payload?.correctWords / action.payload?.time
+            );
         },
-        setNumberToggle: (state, action: PayloadAction<boolean>) => {
-            state.numberBool = action.payload;
-        },
-        setMenuToggle: (state, action: PayloadAction<string>) => {
-            state.toggleMenuValue = action.payload;
-        },
-        setTimerValueToggle: (state, action: PayloadAction<string>) => {
-            state.toggleTimerValue = action.payload;
-        },
-        setTextLengthValueToggle: (state, action: PayloadAction<string>) => {
-            state.toggleTexLengthValue = action.payload;
-        },
-        setQuoteLengthValueToggle: (state, action: PayloadAction<string>) => {
-            state.toggleQuoteLengthValue = action.payload;
-        },
-        setShowLeftTabs: (state, action: PayloadAction<boolean>) => {
-            state.showLeftTabs = action.payload;
-        },
-        setShowRightTabs: (state, action: PayloadAction<boolean>) => {
-            state.showRightTabs = action.payload;
+        resetStats: (state) => {
+            state.accuracy = 0;
+            state.correctCharacters = 0;
+            state.incorrectCharacters = 0;
+            state.extraCharacters = 0;
+            state.missedCharacters = 0;
+            state.correctWords = 0;
+            state.totalWords = 0;
+            state.wrongKeystrokes = 0;
+            state.wpm = 0;
+            state.time = 0;
         },
     },
 });
 
 // Export actions
-export const {
-    setPunctuationToggle,
-    setNumberToggle,
-    setMenuToggle,
-    setTimerValueToggle,
-    setTextLengthValueToggle,
-    setQuoteLengthValueToggle,
-    setShowLeftTabs,
-    setShowRightTabs,
-} = typingStatsSlice.actions;
+export const { setStats, resetStats } = typingStatsSlice.actions;
 
 // Export reducer
 export default typingStatsSlice.reducer;

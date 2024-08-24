@@ -189,10 +189,6 @@ If you wish to support further development and feel extra awesome, you can [dona
 14. Tokyo Night
 15. SynthWave '84
 
-// TODO: put stats in redux
-// TODO: getWPM and getAccuracy remove functions from home
-// TODO: add extra characters after the word
-// TODO: add wrong character on top of the word
 // TODO: on backspace go back to previous word
 // TODO: Clock change to timer
 // TODO: dynamic word addition on reset
