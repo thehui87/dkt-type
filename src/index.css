@@ -55,10 +55,28 @@ code {
 .word {
     padding: 0px 8px;
     display: inline-block;
+    position: relative;
 }
 /* var(--error-color) */
 .word.typed.error {
     border-bottom: 2px dashed red;
+}
+
+.incorrect-word {
+    position: absolute;
+    top: -25px;
+    left: 0px;
+    padding: 0px 8px;
+    display: inline-block;
+    font-size: 16px;
+    color: red;
+    pointer-events: none;
+}
+.incorrect-word span {
+    width: 20px;
+    text-align: center;
+    display: inline-block;
+    pointer-events: none;
 }
 
 .letter {
@@ -70,6 +88,10 @@ code {
 .letter.correct {
     color: #99f6e4;
 }
+.incorrect.extra {
+    opacity: 0.5;
+}
+.incorrect.extra,
 .letter.incorrect {
     color: red;
 }

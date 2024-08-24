@@ -46,6 +46,9 @@ const Home = () => {
     const [counter, setCounter] = useState<number>(0);
     const [inputFocus, setInputFocus] = useState<boolean>(false);
     const [letterArray, setLetterArray] = useState<Array<Element>>([]);
+    const [incorrectLetterArray, setIncorrectLetterArray] = useState<
+        Array<Element>
+    >([]);
     const [space, setSpace] = useState<boolean>(false);
     const [incorrectCounter, setIncorrectCounter] = useState<number>(0);
 
@@ -141,6 +144,10 @@ const Home = () => {
             setActiveWorHTML(wordList[counter]);
             let letterArray = wordList[counter].querySelectorAll('.letter');
             setLetterArray([...letterArray]);
+            let incorrectLetterArray = wordList[counter].querySelectorAll(
+                '.incorrect-word span'
+            );
+            setIncorrectLetterArray([...incorrectLetterArray]);
         };
 
         if (counter < wordArray.length) {
@@ -185,6 +192,12 @@ const Home = () => {
             wordsList[i].classList.add('word');
         }
 
+        let incorrectList = document.querySelectorAll('.incorrect-word span');
+        for (let i = 0; i < incorrectList.length; i++) {
+            incorrectList[i].classList.remove(...lettersList[i].classList);
+            incorrectList[i].innerHTML = '';
+        }
+
         setWordArray(() => [...textBlock.split(' ')]);
         setCounter(0);
         setActiveWord(wordArray[0]);
@@ -206,23 +219,51 @@ const Home = () => {
     const letterValuation = () => {
         let lastLetterWordIndex = inputValue.trim().length - 1;
         if (oldInputValue.trim().length < inputValue.trim().length) {
-            if (lastLetterWordIndex >= 0 && letterArray[lastLetterWordIndex]) {
+            if (lastLetterWordIndex >= 0) {
+                //&& letterArray[lastLetterWordIndex]
+                // console.log(inputValue.trim()[lastLetterWordIndex]);
                 if (
                     activeWord[lastLetterWordIndex] ===
                     inputValue.trim()[lastLetterWordIndex]
                 ) {
                     letterArray[lastLetterWordIndex].classList.add('correct');
                 } else {
-                    letterArray[lastLetterWordIndex].classList.add('incorrect');
-                    setIncorrectCounter(incorrectCounter + 1);
+                    // if inputValue.length > activeWord.length then add dynamic span with class "incorrect extra"
+                    if (inputValue.trim().length > activeWord.length) {
+                        let extraSpanTag = document.createElement('span');
+                        extraSpanTag.className = 'incorrect extra';
+                        extraSpanTag.innerHTML =
+                            inputValue.trim()[lastLetterWordIndex];
+                        activeWordHTML?.appendChild(extraSpanTag);
+                    } else {
+                        // incorrect letter typed
+                        letterArray[lastLetterWordIndex].classList.add(
+                            'incorrect'
+                        );
+                        setIncorrectCounter(incorrectCounter + 1);
+                        incorrectLetterArray[lastLetterWordIndex].innerHTML =
+                            inputValue.trim()[lastLetterWordIndex];
+                    }
                 }
             }
         } else {
-            if (letterArray[lastLetterWordIndex + 1] && !space) {
-                letterArray[lastLetterWordIndex + 1].classList.remove(
-                    ...letterArray[lastLetterWordIndex + 1].classList
-                );
-                letterArray[lastLetterWordIndex + 1].classList.add('letter');
+            if (inputValue.trim().length >= activeWord.length) {
+                //  delete incorrect extra
+                if (activeWordHTML && activeWordHTML.lastElementChild) {
+                    activeWordHTML.removeChild(activeWordHTML.lastElementChild);
+                }
+            } else {
+                // delete incorrect letter
+                if (letterArray[lastLetterWordIndex + 1] && !space) {
+                    letterArray[lastLetterWordIndex + 1].classList.remove(
+                        ...letterArray[lastLetterWordIndex + 1].classList
+                    );
+                    letterArray[lastLetterWordIndex + 1].classList.add(
+                        'letter'
+                    );
+                    incorrectLetterArray[lastLetterWordIndex + 1].innerHTML =
+                        '';
+                }
             }
         }
     };
@@ -295,7 +336,7 @@ const Home = () => {
                     {/* Text Field */}
                     <div
                         ref={textContainerRef}
-                        className="rounded-lg bg-teal-950 text-3xl text-teal-600 min-h-40 max-h-40 overflow-hidden py-2 leading-12 tracking-wider text-left relative"
+                        className="rounded-lg bg-teal-950 text-3xl text-teal-600 min-h-40 max-h-40 overflow-hidden py-2 leading-14 tracking-wider text-left relative"
                     >
                         {!isDisabled && (
                             <div
@@ -324,6 +365,23 @@ const Home = () => {
                         <div id="words">
                             {wordArray.map((word: string, index: number) => (
                                 <div key={index} className={'word'}>
+                                    <div className={'incorrect-word'}>
+                                        {word
+                                            .split('')
+                                            .map(
+                                                (
+                                                    letterChar: string,
+                                                    indexIncorrectLetter: number
+                                                ) => (
+                                                    <span
+                                                        key={`incorrect-letter-${index}-${indexIncorrectLetter}`}
+                                                        // className={'letter'}
+                                                    >
+                                                        {/* {letterChar} */}
+                                                    </span>
+                                                )
+                                            )}
+                                    </div>
                                     {word
                                         .split('')
                                         .map(
@@ -332,7 +390,7 @@ const Home = () => {
                                                 indexLetter: number
                                             ) => (
                                                 <span
-                                                    key={indexLetter}
+                                                    key={`letter-${index}-${indexLetter}`}
                                                     className={'letter'}
                                                 >
                                                     {letterChar}
@@ -405,9 +463,10 @@ export default Home;
 // TODO: put stats in redux
 // TODO: getWPM and getAccuracy remove functions from home
 // TODO: add extra characters after the word
-// TODO: add wrong character on top of the word
+// TODO: add wrong character on top of the word - done
 // TODO: on backspace go back to previous word
 // TODO: Clock change to timer
 // TODO: dynamic word addition on reset
 // TODO: toolbar each button functionality
 // TODO: generic modal component
+// TODO: Dynamic color themes

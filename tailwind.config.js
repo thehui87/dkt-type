@@ -6,6 +6,7 @@ module.exports = {
             lineHeight: {
                 'extra-loose': '2.5',
                 12: '3rem',
+                14: '3.5rem',
             },
             fontFamily: {
                 RobotoMono: ['RobotoMono-Medium', 'sans-serif'],
