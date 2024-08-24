@@ -42,13 +42,12 @@ const Home = () => {
     const [activeWord, setActiveWord] = useState<string>('');
     const [activeWordHTML, setActiveWorHTML] = useState<Element | null>(null);
     const [inputValue, setInputValue] = useState('');
+    const [oldInputValue, setOldInputValue] = useState('');
     const [counter, setCounter] = useState<number>(0);
     const [inputFocus, setInputFocus] = useState<boolean>(false);
     const [letterArray, setLetterArray] = useState<Array<Element>>([]);
     const [space, setSpace] = useState<boolean>(false);
     const [incorrectCounter, setIncorrectCounter] = useState<number>(0);
-    // const [activeLetter, setActiveLetter] = useState<string>('');
-    // const [activeLetterCounter, setActiveLetterCounter] = useState<number>(0);
 
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const [caretPosition, setCaretPosition] = useState<CaretPos>({
@@ -67,62 +66,23 @@ const Home = () => {
             timerRef.current?.start();
         }
 
+        setOldInputValue(inputValue);
         setInputValue(event.target.value.trim());
     };
 
     useEffect(() => {
-        // if (backspace) {
-        //     let index = inputValue.length - 1;
-        //     if (letterArray[index]) {
-        //         letterArray[index].classList.remove(
-        //             ...letterArray[index].classList
-        //         );
-        //         letterArray[index].classList.add('letter');
-        //     }
-        //     setBackspace(false);
-        // } else {
-
-        if (!space) {
-            for (
-                let i = inputValue.trim().length;
-                i < letterArray.length;
-                i++
-            ) {
-                letterArray[i].classList.remove(...letterArray[i].classList);
-                letterArray[i].classList.add('letter');
-            }
-        }
-
-        inputValue
-            .trim()
-            .split('')
-            .forEach((value: string, index: number) => {
-                const isCorrect = value === activeWord[index];
-                if (letterArray[index]) {
-                    if (isCorrect) letterArray[index].classList.add('correct');
-                    else {
-                        letterArray[index].classList.add('incorrect');
-                        // setIncorrectCounter(incorrectCounter + 1); // TODO: this needs to be changed cause if multiple wrong characters are typed then this counts duplicates when pressing backspace
-                    }
-                }
-                // console.log('Y: ', letterArray[index]);
-
-                // if (isCorrect) console.log('Y: ', letterArray[index]);
-                // else console.log('N:', letterArray[index]);
-            });
+        letterValuation();
         updateCartePosition();
-
-        // }
     }, [inputValue]);
+
     const handleSpace = (e: any) => {
-        if (inputValue.length > 1 && inputValue.trim().length === 0) {
+        if (e.target.value.length > 1 && e.target.value.trim().length === 0) {
             setInputValue('');
         }
 
         if (e.keyCode === 32) {
-            // console.log({ inputValue });
             setTypedArray((oldArr) => [...oldArr, inputValue]);
-            if (activeWord === inputValue.trim()) {
+            if (activeWord === e.target.value.trim()) {
                 wordValuation();
             } else {
                 wordValuation('error');
@@ -133,21 +93,16 @@ const Home = () => {
             });
             setSpace(true);
         } else {
+            for (
+                let i = e.target.value.trim().length;
+                i < letterArray.length;
+                i++
+            ) {
+                letterArray[i].classList.remove(...letterArray[i].classList);
+                letterArray[i].classList.add('letter');
+            }
             setSpace(false);
         }
-        // backspace
-        // if (e.keyCode === 8) {
-        //     setBackspace(true);
-        //     //     let index = inputValue.length - 1;
-        //     //     if (letterArray[index]) {
-        //     //         letterArray[index].classList.remove(
-        //     //             ...letterArray[index].classList
-        //     //         );
-        //     //         letterArray[index].classList.add('letter');
-        //     //     }
-        // } else {
-        //     setBackspace(false);
-        // }
     };
 
     const updateCartePosition = () => {
@@ -192,6 +147,8 @@ const Home = () => {
             setActiveWord(wordArray[counter]);
             setActiveWordHTML();
         } else {
+            setActiveWord('');
+            // setActiveWordHTML();
             setIsDisabled(true);
             timerRef.current?.stop();
         }
@@ -201,7 +158,6 @@ const Home = () => {
         setWordArray([...textBlock.split(' ')]);
         setIsDisabled(false);
         setIncorrectCounter(0);
-        // setActiveLetterCounter(0);
         return () => {
             timerRef.current?.reset();
         };
@@ -236,7 +192,6 @@ const Home = () => {
         setIsDisabled(false);
         setTypedArray([]);
         setIncorrectCounter(0);
-        // setActiveLetterCounter(0);
 
         timerRef.current?.reset();
     };
@@ -246,6 +201,29 @@ const Home = () => {
         if (lastActiveWord && lastActiveWord.classList.contains('active')) {
             lastActiveWord.classList.add('typed');
             if (value) lastActiveWord.classList.add(value);
+        }
+    };
+    const letterValuation = () => {
+        let lastLetterWordIndex = inputValue.trim().length - 1;
+        if (oldInputValue.trim().length < inputValue.trim().length) {
+            if (lastLetterWordIndex >= 0 && letterArray[lastLetterWordIndex]) {
+                if (
+                    activeWord[lastLetterWordIndex] ===
+                    inputValue.trim()[lastLetterWordIndex]
+                ) {
+                    letterArray[lastLetterWordIndex].classList.add('correct');
+                } else {
+                    letterArray[lastLetterWordIndex].classList.add('incorrect');
+                    setIncorrectCounter(incorrectCounter + 1);
+                }
+            }
+        } else {
+            if (letterArray[lastLetterWordIndex + 1] && !space) {
+                letterArray[lastLetterWordIndex + 1].classList.remove(
+                    ...letterArray[lastLetterWordIndex + 1].classList
+                );
+                letterArray[lastLetterWordIndex + 1].classList.add('letter');
+            }
         }
     };
 
