@@ -1,28 +1,68 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { wordListGenerator, quoteGenerator } from '../../utils/generator';
 
 interface ToolbarState {
-    value: number;
+    clock: boolean;
     punctuationBool: boolean;
     numberBool: boolean;
     toggleMenuValue: string;
-    toggleTimerValue: string;
-    toggleTexLengthValue: string;
+    toggleTimerValue: number;
+    toggleTexLengthValue: number;
     toggleQuoteLengthValue: string;
     showLeftTabs: boolean;
     showRightTabs: boolean;
+    newWordArray: string[];
+    quoteSource?: string | null;
+    openModal: boolean;
 }
 
 // Initial state
 const initialState: ToolbarState = {
-    value: 0,
+    clock: true,
     punctuationBool: false,
     numberBool: false,
-    toggleMenuValue: 'time',
-    toggleTimerValue: '30',
-    toggleTexLengthValue: '50',
+    toggleMenuValue: 'word',
+    toggleTimerValue: 30,
+    toggleTexLengthValue: 50,
     toggleQuoteLengthValue: 'all',
     showLeftTabs: true,
     showRightTabs: true,
+    newWordArray: [],
+    quoteSource: null,
+    openModal: false,
+};
+
+const setNewWordArray = (state: any) => {
+    switch (state.toggleMenuValue) {
+        case 'time':
+            state.newWordArray = [...wordListGenerator(state.toggleTimerValue)];
+            break;
+        case 'word':
+            state.newWordArray = [
+                ...wordListGenerator(state.toggleTexLengthValue),
+            ];
+            break;
+        case 'quote':
+            let newQuoteObject = quoteGenerator();
+            state.quoteSource = newQuoteObject.source;
+            state.newWordArray = [...newQuoteObject.quote.split(' ')];
+            break;
+        case 'zen':
+            state.newWordArray = [];
+            break;
+        case 'custom':
+            state.newWordArray = [];
+            break;
+        default:
+            state.newWordArray = [
+                ...wordListGenerator(state.toggleTexLengthValue),
+            ];
+    }
+
+    // return {
+
+    //     value: action.payload,
+    //   };
 };
 
 // Create slice
@@ -47,21 +87,69 @@ const toolbarSlice = createSlice({
         },
         setMenuToggle: (state, action: PayloadAction<string>) => {
             state.toggleMenuValue = action.payload;
+            switch (action.payload) {
+                case 'time':
+                    state.clock = false;
+                    state.showLeftTabs = true;
+                    state.quoteSource = null;
+                    break;
+                case 'word':
+                    state.clock = true;
+                    state.showLeftTabs = true;
+                    state.quoteSource = null;
+                    break;
+                case 'quote':
+                    state.clock = true;
+                    state.showLeftTabs = false;
+                    // state.newWordArray
+                    break;
+                case 'zen':
+                    state.clock = true;
+                    state.showLeftTabs = false;
+                    state.quoteSource = null;
+                    break;
+                case 'custom':
+                    state.clock = true;
+                    state.showLeftTabs = true;
+                    state.quoteSource = null;
+                    break;
+                default:
+                    state.clock = true;
+                    state.showLeftTabs = true;
+                    state.quoteSource = null;
+                    break;
+            }
+            setNewWordArray(state);
         },
-        setTimerValueToggle: (state, action: PayloadAction<string>) => {
+        setTimerValueToggle: (state, action: PayloadAction<number>) => {
             state.toggleTimerValue = action.payload;
+            setNewWordArray(state);
         },
-        setTextLengthValueToggle: (state, action: PayloadAction<string>) => {
+        setTextLengthValueToggle: (state, action: PayloadAction<number>) => {
             state.toggleTexLengthValue = action.payload;
+            setNewWordArray(state);
         },
         setQuoteLengthValueToggle: (state, action: PayloadAction<string>) => {
             state.toggleQuoteLengthValue = action.payload;
         },
-        setShowLeftTabs: (state, action: PayloadAction<boolean>) => {
-            state.showLeftTabs = action.payload;
+        // setShowLeftTabs: (state, action: PayloadAction<boolean>) => {
+        //     state.showLeftTabs = action.payload;
+        // },
+        resetWordArray: (state) => {
+            // console.log('new array');
+            setNewWordArray(state);
         },
+        // setNewQuote: (state) => {
+        //     console.log('new array');
+        //     state.newWordArray = [
+        //         ...wordListGenerator(state.toggleTexLengthValue),
+        //     ];
+        // },
         setShowRightTabs: (state, action: PayloadAction<boolean>) => {
             state.showRightTabs = action.payload;
+        },
+        setToggleModal: (state) => {
+            state.openModal = !state.openModal;
         },
     },
 });
@@ -74,8 +162,10 @@ export const {
     setTimerValueToggle,
     setTextLengthValueToggle,
     setQuoteLengthValueToggle,
-    setShowLeftTabs,
+    resetWordArray,
+    // setShowLeftTabs,
     setShowRightTabs,
+    setToggleModal,
 } = toolbarSlice.actions;
 
 // Export reducer

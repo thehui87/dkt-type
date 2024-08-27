@@ -119,6 +119,10 @@ code {
     left: 7px;
 }
 
+li.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
 @keyframes caretFlashSmooth {
     0%,
     to {

@@ -17,6 +17,11 @@ import {
     resetStats,
     TypingStatsState,
 } from '../redux/toolbar/typingstats.slice';
+import TypingStats from '../components/stats';
+import { resetWordArray, setToggleModal } from '../redux/toolbar/toolbar.slice';
+
+// import { wordListGenerator } from '../utils/generator';
+import GenericModal from '../components/modals/genericModal';
 
 // declare global {
 //     namespace JSX {
@@ -33,16 +38,6 @@ import {
 //     'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt asperiores, dolorem nisi praesentium eligendi est consectetur ipsum veritatis fuga similique dolor magni obcaecati aut id, aperiam iure doloribus reprehenderit officia.';
 const textBlock =
     'Maybe if we felt any human loss as keenly as we feel one of those close to us, human history would be far less bloody.';
-// interface textData {
-//     username: string;
-//     password: string;
-//     prevState: null;
-// }
-// interface StylesDictionary {
-//   [Key: string]: CSSProperties
-// }
-
-const statsStyle = 'mr-4';
 
 interface CaretPos {
     x: number;
@@ -50,13 +45,14 @@ interface CaretPos {
 }
 
 const Home = () => {
-    const [wordArray, setWordArray] = useState<Array<string>>([]);
-    const [typedArray, setTypedArray] = useState<Array<string>>([]);
-    const [activeWord, setActiveWord] = useState<string>('');
-    const [activeWordHTML, setActiveWorHTML] = useState<Element | null>(null);
-    const [inputValue, setInputValue] = useState('');
-    const [oldInputValue, setOldInputValue] = useState('');
-    const [counter, setCounter] = useState<number>(0);
+    const [wordArray, setWordArray] = useState<Array<string>>([]); // system generated words
+    const [wordCounter, setWordCounter] = useState<number>(0); // word counter
+    const [typedArray, setTypedArray] = useState<Array<string>>([]); // user typed words
+    const [activeWord, setActiveWord] = useState<string>(''); // current active word
+    const [oldActiveWord, setOldActiveWord] = useState<string>('');
+    const [activeWordHTML, setActiveWorHTML] = useState<Element | null>(null); // curent active html word container
+    const [inputValue, setInputValue] = useState(''); // input tag value
+    const [oldInputValue, setOldInputValue] = useState(''); // previous input tag value
     const [inputFocus, setInputFocus] = useState<boolean>(false);
     const [letterArray, setLetterArray] = useState<Array<Element>>([]);
     const [incorrectLetterArray, setIncorrectLetterArray] = useState<
@@ -73,7 +69,10 @@ const Home = () => {
 
     const timerRef = useRef<TimerHandle>(null);
     const textContainerRef = useRef<HTMLDivElement>(null);
+    const textParentRef = useRef<HTMLDivElement>(null);
     // const [size, setSize] = useState([0, 0]);
+    const [parentContainerRect, setParentContainerRect] = useState<DOMRect>();
+    // const [wordsContainer, setWordsContainer] = useState<HTMLElement>();
     const dispatch = useDispatch();
     const {
         accuracy,
@@ -86,9 +85,17 @@ const Home = () => {
         wrongKeystrokes,
         wpm,
     } = useSelector((state: RootState) => state.typingstats);
+    const {
+        clock,
+        toggleTimerValue,
+        toggleMenuValue,
+        newWordArray,
+        quoteSource,
+        // openModal,
+    } = useSelector((state: RootState) => state.toolbar);
 
     const handleInputChange = (event: any) => {
-        if (counter < wordArray.length) {
+        if (wordCounter < wordArray.length) {
             timerRef.current?.start();
         }
 
@@ -96,37 +103,69 @@ const Home = () => {
         setInputValue(event.target.value.trim());
     };
 
+    // caret position
     const updateCaretPosition = useCallback(() => {
-        let boundingRect: DOMRect =
-            activeWordHTML?.getBoundingClientRect() as DOMRect;
-        if (textContainerRef.current) {
-            let a: CaretPos = {
+        // (inputValue.trim().length > 0 || activeWord != oldActiveWord)
+
+        if (
+            textContainerRef.current &&
+            textParentRef.current &&
+            activeWordHTML?.classList.contains('active') &&
+            !activeWordHTML?.classList.contains('typed')
+        ) {
+            let boundingRectTop =
+                textContainerRef.current.getBoundingClientRect() as DOMRect;
+            let boundingRect: DOMRect =
+                activeWordHTML?.getBoundingClientRect() as DOMRect;
+            let boundingRectWords =
+                textParentRef?.current.getBoundingClientRect() as DOMRect;
+
+            let temp: number = 0;
+            let parentDif = 0;
+
+            temp = Math.round(boundingRect?.top - boundingRectTop?.top);
+            parentDif = Math.round(
+                boundingRectWords?.top - boundingRectTop?.top
+            );
+
+            if (temp < 0) {
+                let offsetPos = temp - parentDif - 12;
+                textParentRef.current.style.top = `${-offsetPos}px`;
+            }
+            if (temp > 76) {
+                let offsetPos = temp - parentDif - 68;
+                textParentRef.current.style.top = `${-offsetPos}px`;
+            }
+
+            setCaretPosition({
                 x:
                     boundingRect?.left -
-                    textContainerRef.current.offsetLeft +
+                    boundingRectTop.left +
                     inputValue.trim().length * 20 +
                     7,
-                y:
-                    Math.round(
-                        boundingRect?.top - textContainerRef.current.offsetTop
-                    ) + 0,
+                y: Math.abs(temp) < 30 ? 20 : 76,
+            });
+            let a = {
+                x:
+                    boundingRect?.left -
+                    boundingRectTop.left +
+                    inputValue.trim().length * 20 +
+                    7,
+                y: Math.abs(temp) < 30 ? 20 : 76,
+                //  Math.round(boundingRect?.top - boundingRectTop?.top),
             };
-            // if (a.y > 80) {
-            //     let wordContainer = document.getElementById('words');
-            //     if (wordContainer !== null) {
-            //         let temp = wordContainer.style.top + 64;
-            //         wordContainer.style.top = `${-temp}px`;
-            //     }
-            //     updateCaretPosition();
-            // }
-            setCaretPosition(a);
         }
     }, [activeWordHTML, inputValue]);
+    // activeWordHTML,
 
     useEffect(() => {
         const letterValuation = () => {
+            // console.log({ activeWord });
             let lastLetterWordIndex = inputValue.trim().length - 1;
-            if (oldInputValue.trim().length < inputValue.trim().length) {
+            if (
+                oldInputValue.trim().length < inputValue.trim().length &&
+                activeWord
+            ) {
                 if (lastLetterWordIndex >= 0) {
                     if (
                         activeWord[lastLetterWordIndex] ===
@@ -157,7 +196,7 @@ const Home = () => {
                     }
                 }
             } else {
-                if (inputValue.trim().length >= activeWord.length) {
+                if (inputValue?.trim()?.length >= activeWord?.length) {
                     //  delete incorrect extra
                     if (activeWordHTML && activeWordHTML.lastElementChild) {
                         activeWordHTML.removeChild(
@@ -182,27 +221,28 @@ const Home = () => {
         };
 
         letterValuation();
-        updateCaretPosition();
+        // updateCaretPosition();
     }, [inputValue]);
 
     const handleSpace = (e: any) => {
-        if (e.target.value.length > 1 && e.target.value.trim().length === 0) {
-            setInputValue('');
-        }
+        let targetValue = e.target.value.trim();
+
+        // if (e.target.value.length > 1 && e.target.value.trim().length === 0) {
+        //     setInputValue('');
+        // }
 
         if (e.keyCode === 32) {
             setTypedArray((oldArr) => [...oldArr, inputValue]);
-            if (e.target.value.trim().length > 0) {
-                if (activeWord === e.target.value.trim()) {
-                    if (e.target.value.trim().length > 0) {
-                        wordValuation();
-                    }
+            // word should have atleast 1 character
+            if (targetValue.length > 0) {
+                if (activeWord === targetValue) {
+                    wordValuation();
                 } else {
                     wordValuation('error');
                 }
 
                 setInputValue('');
-                setCounter((count) => count + 1);
+                setWordCounter((count) => count + 1);
                 setSpace(true);
             }
         } else {
@@ -229,30 +269,79 @@ const Home = () => {
             }
 
             let wordList = document.querySelectorAll('.word');
-            wordList[counter].classList.add('active');
-            setActiveWorHTML(wordList[counter]);
-            let letterArray = wordList[counter].querySelectorAll('.letter');
+            wordList[wordCounter].classList.add('active');
+            setActiveWorHTML(wordList[wordCounter]);
+            let letterArray = wordList[wordCounter].querySelectorAll('.letter');
             setLetterArray([...letterArray]);
-            let incorrectLetterArray = wordList[counter].querySelectorAll(
+            let incorrectLetterArray = wordList[wordCounter].querySelectorAll(
                 '.incorrect-word span'
             );
             setIncorrectLetterArray([...incorrectLetterArray]);
         };
 
-        if (counter < wordArray.length) {
-            setActiveWord(wordArray[counter]);
-            setActiveWordHTML();
-        } else {
-            setActiveWord('');
-            let lastActiveWord = document.querySelector('.word.active');
-            if (lastActiveWord && lastActiveWord.classList.contains('active')) {
-                lastActiveWord.classList.remove('active');
+        if (clock) {
+            if (wordCounter < wordArray.length) {
+                // console.log('ClockOn');
+
+                setActiveWord(wordArray[wordCounter]);
+                setActiveWordHTML();
+            } else {
+                // console.log('End of ClockOn');
+
+                setActiveWord('');
+                let lastActiveWord = document.querySelector('.word.active');
+                if (
+                    lastActiveWord &&
+                    lastActiveWord.classList.contains('active')
+                ) {
+                    lastActiveWord.classList.remove('active');
+                }
+                setIsDisabled(true);
+                setTypingStats();
+                timerRef.current?.stop();
             }
-            setIsDisabled(true);
-            setTypingStats();
-            timerRef.current?.stop();
+        } else {
+            // && wordCounter < wordArray.length
+            console.log(timerRef.current?.timerRunning);
+            // if (
+            //     timerRef.current?.timerRunning &&
+            //     wordCounter < wordArray.length
+            // ) {
+            //     console.log('TimerOn');
+            //     // debugger;
+            //     setActiveWord(wordArray[wordCounter]);
+            //     setActiveWordHTML();
+            // } else {
+            //     timerRef.current?.stop();
+            //     console.log('TimerOff');
+            //     setActiveWord('');
+            //     // let lastActiveWord = document.querySelector('.word.active');
+            //     // if (
+            //     //     lastActiveWord &&
+            //     //     lastActiveWord.classList.contains('active')
+            //     // ) {
+            //     //     lastActiveWord.classList.remove('active');
+            //     // }
+            //     setIsDisabled(true);
+            //     setTypingStats();
+            //     // timerRef.current?.stop();
+            // }
+            //
         }
-    }, [counter, wordArray]);
+    }, [wordCounter, wordArray]);
+
+    // useEffect(() => {
+    //     if (!timerRef.current?.timerRunning && !clock) {
+    //         setIsDisabled(true);
+    //         setActiveWord('');
+    //         let lastActiveWord = document.querySelector('.word.active');
+    //         if (lastActiveWord && lastActiveWord.classList.contains('active')) {
+    //             lastActiveWord.classList.remove('active');
+    //         }
+
+    //         setTypingStats();
+    //     }
+    // }, [timerRef.current?.timerRunning]);
 
     const resetBoard = useCallback(() => {
         let lettersList = document.querySelectorAll('.letter');
@@ -276,26 +365,59 @@ const Home = () => {
         for (let i = 0; i < incorrectExtraList.length; i++) {
             incorrectExtraList[i].remove();
         }
+        // add words depending on menu
+        dispatch(resetWordArray());
 
-        setWordArray(() => [...textBlock.split(' ')]);
-        setCounter(0);
+        setWordCounter(0);
+        setOldActiveWord('');
         setActiveWord(wordArray[0]);
         setInputValue('');
         setIsDisabled(false);
         setTypedArray([]);
         setIncorrectCounter(0);
+        updateParentContainer();
+        setActiveWorHTML(null);
+        if (textParentRef.current) {
+            textParentRef.current.style.top = '0px';
+        }
+        updateCaretPosition();
 
         timerRef.current?.reset();
         textContainerRef.current?.focus();
+
         dispatch(resetStats());
     }, []);
+
+    const updateParentContainer = () => {
+        if (textContainerRef.current) {
+            let containerRect: DOMRect =
+                textContainerRef?.current.getBoundingClientRect() as DOMRect;
+            setParentContainerRect(containerRect);
+        }
+    };
+
+    useEffect(() => {
+        const handleResize = () => {
+            updateParentContainer();
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    useEffect(() => {
+        setWordArray(() => [...newWordArray]);
+    }, [newWordArray]);
 
     useEffect(() => {
         resetBoard();
         return () => {
             timerRef.current?.reset();
         };
-    }, [resetBoard]);
+    }, [resetBoard, toggleMenuValue]);
 
     useLayoutEffect(() => {
         // function updateSize() {
@@ -328,11 +450,14 @@ const Home = () => {
         ).length;
         let extraCharacters = 0;
         for (let i = 0; i < wordArray.length; i++) {
-            if (wordArray[i].length < typedArray[i].length) {
+            if (wordArray[i]?.length < typedArray[i]?.length) {
                 extraCharacters += typedArray[i].length - wordArray[i].length;
             }
         }
-
+        let timeValue = clock
+            ? timerRef.current?.mindecimal()
+            : toggleTimerValue;
+        console.log('time', timerRef.current?.mindecimal());
         dispatch(
             setStats({
                 correctCharacters: correctCharacters,
@@ -342,7 +467,7 @@ const Home = () => {
                 correctWords: correctWords,
                 totalWords: totalWords,
                 wrongKeystrokes: incorrectCounter,
-                time: timerRef.current?.mindecimal(),
+                time: timeValue,
             } as TypingStatsState)
         );
     };
@@ -352,17 +477,18 @@ const Home = () => {
 
     return (
         <div>
-            <HeadingTag>Home</HeadingTag>
             <div className="h-full flex items-center absolute top-0 w-full">
                 {/* pointer-events-none */}
-                <div className="flex flex-col items-center mx-36 max-sm:mx-10">
+                <div className="flex flex-col items-center mx-36 max-sm:mx-10 w-full">
                     {/* Toolbar */}
                     <ConfigToolbar></ConfigToolbar>
+
                     {/* Word count and time */}
                     <div className="flex flex-row justify-between w-full text-teal-200 text-2xl mb-5">
                         <Tooltip message="Word count" position="top">
-                            <div className="w-32 text-left">{`${counter}/${wordArray.length}`}</div>
+                            <div className="w-32 text-left">{`${wordCounter}/${wordArray.length}`}</div>
                         </Tooltip>
+                        {quoteSource && <div>Source: {quoteSource}</div>}
                         <div>
                             <Timer ref={timerRef} />
                         </div>
@@ -370,14 +496,15 @@ const Home = () => {
                     {/* Text Field */}
                     <div
                         ref={textContainerRef}
-                        className="rounded-lg bg-teal-950 text-3xl text-teal-600 min-h-40 max-h-40 overflow-hidden py-2 leading-14 tracking-wider text-left relative"
+                        // max-h-40
+                        className="rounded-lg bg-teal-950 text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full"
                     >
                         {!isDisabled && (
                             <div
                                 id="caret"
                                 className="bg-orange-400 transition-all duration-75"
                                 style={{
-                                    // left: `${7 + counter * 20 + spaceCounter * 16}px`,
+                                    // left: `${7 + wordCounter * 20 + spaceCounter * 16}px`,
                                     left: `${caretPosition.x}px`,
                                     top: `${caretPosition.y}px`,
                                     visibility: inputFocus
@@ -388,7 +515,7 @@ const Home = () => {
                         )}
 
                         <input
-                            className="opacity-0 absolute w-full h-full left-0 top-0"
+                            className={`${isDisabled ? 'opacity-80' : 'opacity-0'}  absolute w-full h-full left-0 top-0`}
                             value={inputValue}
                             onChange={handleInputChange}
                             onFocus={onFocus}
@@ -396,7 +523,7 @@ const Home = () => {
                             onKeyDown={handleSpace}
                             disabled={isDisabled}
                         />
-                        <div id="words">
+                        <div ref={textParentRef} id="words">
                             {wordArray.map((word: string, index: number) => (
                                 <div key={index} className={'word'}>
                                     <div className={'incorrect-word'}>
@@ -445,42 +572,7 @@ const Home = () => {
                     </div>
                     {/* Stats */}
                     <div className="flex flex-col text-teal-100">
-                        {isDisabled && (
-                            <div className="flex flex-row ">
-                                {/* wordper minutes */}
-
-                                <div className={`${statsStyle}`}>
-                                    {wpm} words per minute.{' '}
-                                </div>
-                                <div className={`${statsStyle}`}>
-                                    Accuracy:{' '}
-                                    {accuracy > 0
-                                        ? `${accuracy}%`
-                                        : 'Too many errors!'}
-                                </div>
-                                <Tooltip
-                                    message="Correct words/Total words"
-                                    position="top"
-                                >
-                                    <div className={`${statsStyle}`}>
-                                        Words: {correctWords}/{totalWords}
-                                    </div>
-                                </Tooltip>
-                                <Tooltip
-                                    message="Correct/incorrect/extra/missed"
-                                    position="top"
-                                >
-                                    <div className={`${statsStyle}`}>
-                                        Characters: {correctCharacters}/
-                                        {incorrectCharacters}/{extraCharacters}/
-                                        {missedCharacters}
-                                    </div>
-                                </Tooltip>
-                                <div className={`${statsStyle}`}>
-                                    Wrong Key: {wrongKeystrokes}
-                                </div>
-                            </div>
-                        )}
+                        {isDisabled && <TypingStats />}
                         <div className={'flex flex-col justify-start'}>
                             <div className="text-left">
                                 {isDisabled && typedArray.join(' ')}
@@ -500,8 +592,6 @@ export default Home;
 
 // TODO: on backspace go back to previous word
 // TODO: Clock change to timer
-// TODO: Auto scroll
 // TODO: dynamic word addition on reset
 // TODO: toolbar each button functionality
-// TODO: generic modal component
 // TODO: Dynamic color themes

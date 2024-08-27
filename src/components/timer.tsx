@@ -5,6 +5,8 @@ import React, {
     useImperativeHandle,
     forwardRef,
 } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 // Define the type for the ref methods
 export interface TimerHandle {
@@ -13,6 +15,7 @@ export interface TimerHandle {
     reset: () => void;
     mindecimal: () => number;
     rawtime: () => Array<number>;
+    timerRunning: boolean;
 }
 
 // interface
@@ -20,19 +23,27 @@ export interface TimerHandle {
 const Timer = forwardRef<TimerHandle>((props, ref) => {
     const [startTime, setStartTime] = useState<number>(0);
     const [endTime, setEndTime] = useState<number>(0);
+    const { clock, toggleTimerValue } = useSelector(
+        (state: RootState) => state.toolbar
+    );
+    const [timerOn, setTimerOn] = useState<boolean>(false);
 
     // const [seconds, setSeconds] = useState<number>(0);
     const intervalId = useRef<NodeJS.Timeout | null>(null);
 
     // Start the timer
     const startTimer = () => {
-        if (intervalId.current === null) {
-            setStartTime(new Date().getTime());
-            intervalId.current = setInterval(() => {
-                // setSeconds((prevSeconds) => prevSeconds + 1);
-                setEndTime(new Date().getTime());
-            }, 100);
-        }
+        if (intervalId.current !== null) return;
+
+        // timerRef.current = window.setInterval(() => {
+        //     setSeconds(prev => prev + 1);
+        //   }, 1000);
+        // setStartTime(new Date().getTime());
+        // setStartTime(startTime);
+        intervalId.current = setInterval(() => {
+            // setSeconds((prevSeconds) => prevSeconds + 1);
+            setStartTime((oldtime) => oldtime + 100);
+        }, 100);
     };
 
     //   intervalId.current = window.setInterval(() => {
@@ -52,33 +63,66 @@ const Timer = forwardRef<TimerHandle>((props, ref) => {
     const resetTimer = () => {
         stopTimer();
         // setSeconds(0);
-        setEndTime(0);
+        // setEndTime(0);
         setStartTime(0);
     };
 
     // Cleanup the interval on unmount
     useEffect(() => {
+        if (clock) {
+            setTimerOn(false);
+        } else {
+            setTimerOn(true);
+        }
         return () => {
             stopTimer();
         };
     }, []);
 
+    const formatTime = (time: number) => {
+        return String(time.toFixed(0)).padStart(2, '0');
+    };
     const getTime = (endTime: number, startTime: number) => {
-        var seconds = (endTime - startTime) / 1000;
-        var minutes = 0;
-        if (seconds >= 60) {
-            minutes = Math.floor(seconds / 60);
-            seconds = seconds % 60;
+        // let seconds = (endTime - startTime) / 1000;
+
+        let timeValue = clock ? startTime : toggleTimerValue - startTime;
+        if (!clock && timeValue <= 0) {
+            setTimerOn(false); // set notification of timer status
+            stopTimer(); // stop the clock
         }
 
-        return `${String(minutes).padStart(2, '0')}:${String(seconds.toFixed(0)).padStart(2, '0')} seconds`;
+        let seconds = Math.floor((timeValue / 1000) % 60);
+        let minutes = Math.floor((timeValue / (1000 * 60)) % 60);
+        let hours = Math.floor((timeValue / (1000 * 60 * 60)) % 24);
+
+        let displayType: string = '00';
+        // if (clock) {
+        displayType = hours > 0 ? `${formatTime(hours)}:` : '';
+        displayType += minutes > 0 ? `${formatTime(minutes)}:` : '';
+        displayType += `${formatTime(seconds)}`;
+        // } else {
+        //     // timer
+        //     let secondsRemaining = toggleTimerValue - startTime;
+
+        //     if (secondsRemaining >= 60) {
+        //         minutes = Math.floor(secondsRemaining / 60);
+        //         secondsRemaining = secondsRemaining % 60;
+        //     }
+        //     displayType = `${String(minutes).padStart(2, '0')}:${String(secondsRemaining.toFixed(0)).padStart(2, '0')} seconds`;
+        //     if (secondsRemaining <= 0) {
+        //         setTimerOn(false); // set notification of timer status
+        //         stopTimer(); // stop the clock
+        //         displayType = `00:00 seconds`;
+        //     }
+        // }
+        return displayType;
     };
 
     const minuteDecimal = () => {
-        return Math.round(endTime - startTime) / (1000 * 60);
+        return Math.round(startTime) / (1000 * 60);
     };
     const rawTime = () => {
-        return [startTime, endTime];
+        return [startTime];
     };
     // Expose start, stop, and reset functions to the parent component
     useImperativeHandle(ref, () => ({
@@ -87,6 +131,7 @@ const Timer = forwardRef<TimerHandle>((props, ref) => {
         reset: resetTimer,
         mindecimal: minuteDecimal,
         rawtime: rawTime,
+        timerRunning: timerOn,
     }));
 
     return <div>{getTime(endTime, startTime)}</div>;
