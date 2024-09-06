@@ -507,12 +507,13 @@ const Home = () => {
                     <div
                         ref={textContainerRef}
                         // max-h-40
-                        className="rounded-lg bg-teal-950 text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full"
+                        className={`rounded-lg  ${inputFocus ? 'bg-teal-950 text-teal-600' : 'bg-teal-800 text-teal-700'} text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full`}
+                        onClick={onFocus}
                     >
                         {!isDisabled && (
                             <div
                                 id="caret"
-                                className="bg-orange-400 transition-all duration-75"
+                                className={`bg-orange-400 transition-all duration-75 ${timerRef.current?.rawTime() && timerRef.current.rawTime() > 0 ? 'animation-none' : ''}`}
                                 style={{
                                     // left: `${7 + wordCounter * 20 + spaceCounter * 16}px`,
                                     left: `${caretPosition.x}px`,
@@ -526,7 +527,7 @@ const Home = () => {
 
                         <input
                             ref={inputRef}
-                            className={`${isDisabled ? 'opacity-80' : 'opacity-0'}  absolute w-full h-full left-0 top-0`}
+                            className={`${isDisabled ? 'opacity-80' : 'opacity-30'}  absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none`}
                             value={inputValue}
                             onChange={handleInputChange}
                             onFocus={onFocus}
