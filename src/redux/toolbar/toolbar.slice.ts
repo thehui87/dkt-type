@@ -14,6 +14,8 @@ interface ToolbarState {
     newWordArray: string[];
     quoteSource?: string | null;
     openModal: boolean;
+    showIncorrectWord: boolean;
+    showIncorrectCounter: boolean;
 }
 
 // Initial state
@@ -30,6 +32,8 @@ const initialState: ToolbarState = {
     newWordArray: [],
     quoteSource: null,
     openModal: false,
+    showIncorrectWord: true,
+    showIncorrectCounter: false,
 };
 
 const setNewWordArray = (state: any) => {
@@ -151,6 +155,12 @@ const toolbarSlice = createSlice({
         setToggleModal: (state) => {
             state.openModal = !state.openModal;
         },
+        setToggleShowIncorrectWord: (state) => {
+            state.showIncorrectWord = !state.showIncorrectWord;
+        },
+        setToggleShowIncorrectCounter: (state) => {
+            state.showIncorrectCounter = !state.showIncorrectCounter;
+        },
     },
 });
 
@@ -166,6 +176,8 @@ export const {
     // setShowLeftTabs,
     setShowRightTabs,
     setToggleModal,
+    setToggleShowIncorrectWord,
+    setToggleShowIncorrectCounter,
 } = toolbarSlice.actions;
 
 // Export reducer

@@ -11,6 +11,9 @@ module.exports = {
             fontFamily: {
                 RobotoMono: ['RobotoMono-Medium', 'sans-serif'],
             },
+            boxShadow: {
+                slider: 'inset 0 0 5px 0 rgba(0, 0, 0, 1)',
+            },
         },
         fontSize: {
             xs: ['0.7rem', '1rem'],

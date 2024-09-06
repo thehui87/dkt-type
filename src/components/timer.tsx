@@ -14,7 +14,7 @@ export interface TimerHandle {
     stop: () => void;
     reset: () => void;
     mindecimal: () => number;
-    rawtime: () => Array<number>;
+    rawTime: () => number;
     timerRunning: boolean;
 }
 
@@ -121,8 +121,8 @@ const Timer = forwardRef<TimerHandle>((props, ref) => {
     const minuteDecimal = () => {
         return Math.round(startTime) / (1000 * 60);
     };
-    const rawTime = () => {
-        return [startTime];
+    const getRawTime = () => {
+        return startTime;
     };
     // Expose start, stop, and reset functions to the parent component
     useImperativeHandle(ref, () => ({
@@ -130,7 +130,7 @@ const Timer = forwardRef<TimerHandle>((props, ref) => {
         stop: stopTimer,
         reset: resetTimer,
         mindecimal: minuteDecimal,
-        rawtime: rawTime,
+        rawTime: getRawTime,
         timerRunning: timerOn,
     }));
 

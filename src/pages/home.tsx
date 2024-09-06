@@ -69,6 +69,7 @@ const Home = () => {
 
     const timerRef = useRef<TimerHandle>(null);
     const textContainerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const textParentRef = useRef<HTMLDivElement>(null);
     // const [size, setSize] = useState([0, 0]);
     const [parentContainerRect, setParentContainerRect] = useState<DOMRect>();
@@ -92,6 +93,8 @@ const Home = () => {
         newWordArray,
         quoteSource,
         // openModal,
+        showIncorrectWord,
+        showIncorrectCounter,
     } = useSelector((state: RootState) => state.toolbar);
 
     const handleInputChange = (event: any) => {
@@ -472,7 +475,10 @@ const Home = () => {
         );
     };
 
-    const onFocus = () => setInputFocus(true);
+    const onFocus = () => {
+        setInputFocus(true);
+        inputRef.current?.focus();
+    };
     const onBlur = () => setInputFocus(false);
 
     return (
@@ -488,7 +494,11 @@ const Home = () => {
                         <Tooltip message="Word count" position="top">
                             <div className="w-32 text-left">{`${wordCounter}/${wordArray.length}`}</div>
                         </Tooltip>
-                        {quoteSource && <div>Source: {quoteSource}</div>}
+                        {showIncorrectCounter && (
+                            <div className="text-red-500">
+                                {incorrectCounter}
+                            </div>
+                        )}
                         <div>
                             <Timer ref={timerRef} />
                         </div>
@@ -515,6 +525,7 @@ const Home = () => {
                         )}
 
                         <input
+                            ref={inputRef}
                             className={`${isDisabled ? 'opacity-80' : 'opacity-0'}  absolute w-full h-full left-0 top-0`}
                             value={inputValue}
                             onChange={handleInputChange}
@@ -526,7 +537,9 @@ const Home = () => {
                         <div ref={textParentRef} id="words">
                             {wordArray.map((word: string, index: number) => (
                                 <div key={index} className={'word'}>
-                                    <div className={'incorrect-word'}>
+                                    <div
+                                        className={`${showIncorrectWord ? '' : 'hidden'} incorrect-word `}
+                                    >
                                         {word
                                             .split('')
                                             .map(
@@ -562,6 +575,11 @@ const Home = () => {
                             ))}
                         </div>
                     </div>
+                    {quoteSource && (
+                        <div className="text-teal-500">
+                            Source: {quoteSource}ss
+                        </div>
+                    )}
                     {/* Reset Button */}
                     <div className="text-teal-200 text-2xl mt-5">
                         <Tooltip message="Reset">
@@ -595,3 +613,5 @@ export default Home;
 // TODO: dynamic word addition on reset
 // TODO: toolbar each button functionality
 // TODO: Dynamic color themes
+// TODO: Make timer work with
+// TODO: add word speed ( end time - start time)

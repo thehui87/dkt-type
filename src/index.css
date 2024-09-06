@@ -56,7 +56,7 @@ code {
     position: relative;
     pointer-events: none;
 }
-
+.word-demo,
 .word {
     padding: 0px 8px;
     display: inline-block;
@@ -68,7 +68,7 @@ code {
 .word.typed.error {
     border-bottom: 2px dashed red;
 }
-
+.incorrect-word-demo,
 .incorrect-word {
     position: absolute;
     top: -25px;
@@ -78,14 +78,21 @@ code {
     font-size: 16px;
     color: red;
     pointer-events: none;
+    margin: auto;
+    right: 0;
 }
+.incorrect-word-demo span,
 .incorrect-word span {
     width: 20px;
     text-align: center;
     display: inline-block;
     pointer-events: none;
 }
-
+.incorrect-word-demo.hidden,
+.incorrect-word.hidden {
+    display: none;
+}
+.letter-demo,
 .letter {
     width: 20px;
     text-align: center;
@@ -100,6 +107,7 @@ code {
 .incorrect.extra {
     opacity: 0.5;
 }
+.letter-demo.incorrect-demo,
 .incorrect.extra,
 .letter.incorrect {
     color: red;
@@ -117,6 +125,12 @@ code {
     display: block;
     top: 12.5px;
     left: 7px;
+    transform-origin: top left;
+    animation-timing-function: ease;
+    transition-behavior: ease;
+}
+#caret.animation-none {
+    animation: none;
 }
 
 li.disabled {

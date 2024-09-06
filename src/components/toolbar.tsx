@@ -8,6 +8,8 @@ import {
     setTextLengthValueToggle,
     setQuoteLengthValueToggle,
     setToggleModal,
+    setToggleShowIncorrectWord,
+    setToggleShowIncorrectCounter,
 } from '../redux/toolbar/toolbar.slice';
 import {
     menuList,
@@ -16,6 +18,8 @@ import {
     quoteList,
 } from '../constants/menuListItems';
 import { IoClose } from 'react-icons/io5';
+import { SliderButton } from './sliderButton';
+import Tooltip from './Tooltip';
 
 const menuStyle = 'cursor-pointer mx-2 leading-10';
 const activeMenuStyle = 'text-teal-200 underline underline-offset-8';
@@ -32,6 +36,8 @@ const ConfigToolbar = () => {
         toggleQuoteLengthValue,
         showLeftTabs,
         openModal,
+        showIncorrectWord,
+        showIncorrectCounter,
     } = useSelector((state: RootState) => state.toolbar);
     const dispatch = useDispatch();
 
@@ -184,6 +190,31 @@ const ConfigToolbar = () => {
                     </ul>
                 )}
             </ul>
+            <div className={'flex mb-8'}>
+                <Tooltip message="show incorrect letters" position={'bottom'}>
+                    <SliderButton
+                        checkedStatus={showIncorrectWord}
+                        changeFunction={setToggleShowIncorrectWord}
+                        children={
+                            <div className="word-demo text-2xl flex justify-center items-center">
+                                {showIncorrectWord && (
+                                    <div className="incorrect-word-demo">s</div>
+                                )}
+                                <span className="letter-demo incorrect-demo">
+                                    A
+                                </span>
+                            </div>
+                        }
+                    />
+                </Tooltip>
+                <Tooltip message="show incorrect counter" position={'bottom'}>
+                    <SliderButton
+                        checkedStatus={showIncorrectCounter}
+                        changeFunction={setToggleShowIncorrectCounter}
+                        children={' incorrect counter'}
+                    />
+                </Tooltip>
+            </div>
             {/* </div> */}
             <button
                 className="block lg:hidden"
