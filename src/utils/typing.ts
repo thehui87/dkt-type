@@ -123,3 +123,64 @@ export const getTypingStats = ({
     } as TypingStatsState;
     // );
 };
+
+// const letterValuation = ({inputValue, oldInputValue, activeWord, letterArray, activeWordHTML, incorrectLetterArray}) => {
+//     // console.log({ activeWord });
+//     let lastLetterWordIndex = inputValue.trim().length - 1;
+//     if (
+//         oldInputValue.trim().length < inputValue.trim().length &&
+//         activeWord
+//     ) {
+//         if (lastLetterWordIndex >= 0) {
+//             if (
+//                 activeWord[lastLetterWordIndex] ===
+//                 inputValue.trim()[lastLetterWordIndex]
+//             ) {
+//                 letterArray[lastLetterWordIndex].classList.add(
+//                     'correct'
+//                 );
+//             } else {
+//                 // if inputValue.length > activeWord.length then add dynamic span with class "incorrect extra"
+//                 if (inputValue.trim().length > activeWord.length) {
+//                     let extraSpanTag = document.createElement('span');
+//                     extraSpanTag.className = 'incorrect extra';
+//                     extraSpanTag.innerHTML =
+//                         inputValue.trim()[lastLetterWordIndex];
+//                     activeWordHTML?.appendChild(extraSpanTag);
+//                 } else {
+//                     // incorrect letter typed
+//                     letterArray[lastLetterWordIndex].classList.add(
+//                         'incorrect'
+//                     );
+//                     incorrectLetterArray[
+//                         lastLetterWordIndex
+//                     ].innerHTML =
+//                         inputValue.trim()[lastLetterWordIndex];
+//                 }
+//                 setIncorrectCounter(incorrectCounter + 1);
+//             }
+//         }
+//     } else {
+//         if (inputValue?.trim()?.length >= activeWord?.length) {
+//             //  delete incorrect extra
+//             if (activeWordHTML && activeWordHTML?.lastElementChild) {
+//                 activeWordHTML.removeChild(
+//                     activeWordHTML.lastElementChild
+//                 );
+//             }
+//         } else {
+//             // delete incorrect letter
+//             if (letterArray[lastLetterWordIndex + 1] && !space) {
+//                 letterArray[lastLetterWordIndex + 1].classList.remove(
+//                     ...letterArray[lastLetterWordIndex + 1].classList
+//                 );
+//                 letterArray[lastLetterWordIndex + 1].classList.add(
+//                     'letter'
+//                 );
+//                 incorrectLetterArray[
+//                     lastLetterWordIndex + 1
+//                 ].innerHTML = '';
+//             }
+//         }
+//     }
+// };

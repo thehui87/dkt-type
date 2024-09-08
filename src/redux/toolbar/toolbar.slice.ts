@@ -16,6 +16,7 @@ interface ToolbarState {
     openModal: boolean;
     showIncorrectWord: boolean;
     showIncorrectCounter: boolean;
+    colorPickerSelection: string;
 }
 
 // Initial state
@@ -34,6 +35,7 @@ const initialState: ToolbarState = {
     openModal: false,
     showIncorrectWord: true,
     showIncorrectCounter: false,
+    colorPickerSelection: 'Default',
 };
 
 const setNewWordArray = (state: any) => {
@@ -161,6 +163,9 @@ const toolbarSlice = createSlice({
         setToggleShowIncorrectCounter: (state) => {
             state.showIncorrectCounter = !state.showIncorrectCounter;
         },
+        setColorPickerSelection: (state, action: PayloadAction<string>) => {
+            state.colorPickerSelection = action.payload;
+        },
     },
 });
 
@@ -178,6 +183,7 @@ export const {
     setToggleModal,
     setToggleShowIncorrectWord,
     setToggleShowIncorrectCounter,
+    setColorPickerSelection,
 } = toolbarSlice.actions;
 
 // Export reducer

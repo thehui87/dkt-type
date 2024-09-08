@@ -72,17 +72,7 @@ const Home = () => {
     const [parentContainerRect, setParentContainerRect] = useState<DOMRect>();
     // const [wordsContainer, setWordsContainer] = useState<HTMLElement>();
     const dispatch = useDispatch();
-    const {
-        accuracy,
-        correctCharacters,
-        incorrectCharacters,
-        extraCharacters,
-        missedCharacters,
-        correctWords,
-        totalWords,
-        wrongKeystrokes,
-        wpm,
-    } = useSelector((state: RootState) => state.typingstats);
+
     const {
         clock,
         toggleTimerValue,
