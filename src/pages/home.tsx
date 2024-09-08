@@ -4,6 +4,7 @@ import {
     useRef,
     useLayoutEffect,
     useCallback,
+    // ElementRef,
 } from 'react';
 import { HeadingTag } from '../components/headingTag';
 import { RxReset } from 'react-icons/rx';
@@ -22,7 +23,8 @@ import { resetWordArray, setToggleModal } from '../redux/toolbar/toolbar.slice';
 
 // import { wordListGenerator } from '../utils/generator';
 import GenericModal from '../components/modals/genericModal';
-
+import { newCaretPosition, getTypingStats } from '../utils/typing';
+import { CaretPos } from '../constants/interfaceItems';
 // declare global {
 //     namespace JSX {
 //         interface IntrinsicElements {
@@ -38,11 +40,6 @@ import GenericModal from '../components/modals/genericModal';
 //     'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt asperiores, dolorem nisi praesentium eligendi est consectetur ipsum veritatis fuga similique dolor magni obcaecati aut id, aperiam iure doloribus reprehenderit officia.';
 const textBlock =
     'Maybe if we felt any human loss as keenly as we feel one of those close to us, human history would be far less bloody.';
-
-interface CaretPos {
-    x: number;
-    y: number;
-}
 
 const Home = () => {
     const [wordArray, setWordArray] = useState<Array<string>>([]); // system generated words
@@ -68,9 +65,9 @@ const Home = () => {
     });
 
     const timerRef = useRef<TimerHandle>(null);
-    const textContainerRef = useRef<HTMLDivElement>(null);
+    const outerTextContainerRef = useRef<HTMLDivElement | null>(null);
+    const innerTextContainertRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const textParentRef = useRef<HTMLDivElement>(null);
     // const [size, setSize] = useState([0, 0]);
     const [parentContainerRect, setParentContainerRect] = useState<DOMRect>();
     // const [wordsContainer, setWordsContainer] = useState<HTMLElement>();
@@ -108,58 +105,15 @@ const Home = () => {
 
     // caret position
     const updateCaretPosition = useCallback(() => {
-        // (inputValue.trim().length > 0 || activeWord != oldActiveWord)
-
-        if (
-            textContainerRef.current &&
-            textParentRef.current &&
-            activeWordHTML?.classList.contains('active') &&
-            !activeWordHTML?.classList.contains('typed')
-        ) {
-            let boundingRectTop =
-                textContainerRef.current.getBoundingClientRect() as DOMRect;
-            let boundingRect: DOMRect =
-                activeWordHTML?.getBoundingClientRect() as DOMRect;
-            let boundingRectWords =
-                textParentRef?.current.getBoundingClientRect() as DOMRect;
-
-            let temp: number = 0;
-            let parentDif = 0;
-
-            temp = Math.round(boundingRect?.top - boundingRectTop?.top);
-            parentDif = Math.round(
-                boundingRectWords?.top - boundingRectTop?.top
-            );
-
-            if (temp < 0) {
-                let offsetPos = temp - parentDif - 12;
-                textParentRef.current.style.top = `${-offsetPos}px`;
-            }
-            if (temp > 76) {
-                let offsetPos = temp - parentDif - 68;
-                textParentRef.current.style.top = `${-offsetPos}px`;
-            }
-
-            setCaretPosition({
-                x:
-                    boundingRect?.left -
-                    boundingRectTop.left +
-                    inputValue.trim().length * 20 +
-                    7,
-                y: Math.abs(temp) < 30 ? 20 : 76,
-            });
-            let a = {
-                x:
-                    boundingRect?.left -
-                    boundingRectTop.left +
-                    inputValue.trim().length * 20 +
-                    7,
-                y: Math.abs(temp) < 30 ? 20 : 76,
-                //  Math.round(boundingRect?.top - boundingRectTop?.top),
-            };
-        }
+        setCaretPosition(
+            newCaretPosition({
+                outerTextContainerRef,
+                innerTextContainertRef,
+                activeWordHTML,
+                inputValue,
+            })
+        );
     }, [activeWordHTML, inputValue]);
-    // activeWordHTML,
 
     useEffect(() => {
         const letterValuation = () => {
@@ -201,7 +155,7 @@ const Home = () => {
             } else {
                 if (inputValue?.trim()?.length >= activeWord?.length) {
                     //  delete incorrect extra
-                    if (activeWordHTML && activeWordHTML.lastElementChild) {
+                    if (activeWordHTML && activeWordHTML?.lastElementChild) {
                         activeWordHTML.removeChild(
                             activeWordHTML.lastElementChild
                         );
@@ -300,7 +254,18 @@ const Home = () => {
                     lastActiveWord.classList.remove('active');
                 }
                 setIsDisabled(true);
-                setTypingStats();
+                dispatch(
+                    setStats(
+                        getTypingStats({
+                            wordArray,
+                            typedArray,
+                            timerRef,
+                            incorrectCounter,
+                            clock,
+                            toggleTimerValue,
+                        })
+                    )
+                );
                 timerRef.current?.stop();
             }
         } else {
@@ -380,21 +345,21 @@ const Home = () => {
         setIncorrectCounter(0);
         updateParentContainer();
         setActiveWorHTML(null);
-        if (textParentRef.current) {
-            textParentRef.current.style.top = '0px';
+        if (innerTextContainertRef.current) {
+            innerTextContainertRef.current.style.top = '0px';
         }
         updateCaretPosition();
 
         timerRef.current?.reset();
-        textContainerRef.current?.focus();
+        outerTextContainerRef.current?.focus();
 
         dispatch(resetStats());
     }, []);
 
     const updateParentContainer = () => {
-        if (textContainerRef.current) {
+        if (outerTextContainerRef.current) {
             let containerRect: DOMRect =
-                textContainerRef?.current.getBoundingClientRect() as DOMRect;
+                outerTextContainerRef?.current.getBoundingClientRect() as DOMRect;
             setParentContainerRect(containerRect);
         }
     };
@@ -439,42 +404,6 @@ const Home = () => {
         }
     };
 
-    const setTypingStats = () => {
-        let correctCharacters: number =
-            document.querySelectorAll('.letter.correct').length;
-        let incorrectCharacters =
-            document.querySelectorAll('.letter.incorrect').length;
-        let totalWords = wordArray.length;
-        let correctWords = document.querySelectorAll(
-            'div.word.typed:not(.error)'
-        ).length;
-        let missedCharacters = document.querySelectorAll(
-            'span.letter:not(.correct):not(.incorrect)'
-        ).length;
-        let extraCharacters = 0;
-        for (let i = 0; i < wordArray.length; i++) {
-            if (wordArray[i]?.length < typedArray[i]?.length) {
-                extraCharacters += typedArray[i].length - wordArray[i].length;
-            }
-        }
-        let timeValue = clock
-            ? timerRef.current?.mindecimal()
-            : toggleTimerValue;
-        console.log('time', timerRef.current?.mindecimal());
-        dispatch(
-            setStats({
-                correctCharacters: correctCharacters,
-                incorrectCharacters: incorrectCharacters,
-                extraCharacters: extraCharacters,
-                missedCharacters: missedCharacters,
-                correctWords: correctWords,
-                totalWords: totalWords,
-                wrongKeystrokes: incorrectCounter,
-                time: timeValue,
-            } as TypingStatsState)
-        );
-    };
-
     const onFocus = () => {
         setInputFocus(true);
         inputRef.current?.focus();
@@ -483,9 +412,9 @@ const Home = () => {
 
     return (
         <div>
-            <div className="h-full flex items-center absolute top-0 w-full">
+            <div className="h-full flex items-center justify-center absolute top-0 w-full">
                 {/* pointer-events-none */}
-                <div className="flex flex-col items-center mx-36 max-sm:mx-10 w-full">
+                <div className="flex flex-col items-center mx-36 max-sm:mx-10 max-w-7xl">
                     {/* Toolbar */}
                     <ConfigToolbar></ConfigToolbar>
 
@@ -505,7 +434,7 @@ const Home = () => {
                     </div>
                     {/* Text Field */}
                     <div
-                        ref={textContainerRef}
+                        ref={outerTextContainerRef}
                         // max-h-40
                         className={`rounded-lg  ${inputFocus ? 'bg-teal-950 text-teal-600' : 'bg-teal-800 text-teal-700'} text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full`}
                         onClick={onFocus}
@@ -515,9 +444,8 @@ const Home = () => {
                                 id="caret"
                                 className={`bg-orange-400 transition-all duration-75 ${timerRef.current?.rawTime() && timerRef.current.rawTime() > 0 ? 'animation-none' : ''}`}
                                 style={{
-                                    // left: `${7 + wordCounter * 20 + spaceCounter * 16}px`,
-                                    left: `${caretPosition.x}px`,
-                                    top: `${caretPosition.y}px`,
+                                    left: `${caretPosition.x > 0 && caretPosition.x}px`,
+                                    top: `${caretPosition.y > 0 && caretPosition.y}px`,
                                     visibility: inputFocus
                                         ? 'visible'
                                         : 'hidden',
@@ -535,7 +463,7 @@ const Home = () => {
                             onKeyDown={handleSpace}
                             disabled={isDisabled}
                         />
-                        <div ref={textParentRef} id="words">
+                        <div ref={innerTextContainertRef} id="words">
                             {wordArray.map((word: string, index: number) => (
                                 <div key={index} className={'word'}>
                                     <div

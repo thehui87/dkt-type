@@ -128,6 +128,7 @@ code {
     transform-origin: top left;
     animation-timing-function: ease;
     transition-behavior: ease;
+    transition: 0.1s;
 }
 #caret.animation-none {
     animation: none;
