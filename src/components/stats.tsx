@@ -18,7 +18,7 @@ const TypingStats = () => {
     } = useSelector((state: RootState) => state.typingstats);
 
     return (
-        <div className="flex flex-row bg-teal-800 justify-evenly items-center rounded-md text-teal-500 p-3 my-5 ">
+        <div className="flex flex-row primary-color justify-evenly items-center rounded-md text-color p-3 my-5 ">
             {/* wordper minutes */}
 
             <Tooltip message="Words per minute" position="top">

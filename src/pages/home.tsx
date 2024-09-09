@@ -409,12 +409,12 @@ const Home = () => {
                     <ConfigToolbar></ConfigToolbar>
 
                     {/* Word count and time */}
-                    <div className="flex flex-row justify-between w-full text-teal-200 text-2xl mb-5">
+                    <div className="flex flex-row justify-between w-full text-active-color text-2xl mb-5">
                         <Tooltip message="Word count" position="top">
                             <div className="w-32 text-left">{`${wordCounter}/${wordArray.length}`}</div>
                         </Tooltip>
                         {showIncorrectCounter && (
-                            <div className="text-red-500">
+                            <div className="error-color">
                                 {incorrectCounter}
                             </div>
                         )}
@@ -426,13 +426,13 @@ const Home = () => {
                     <div
                         ref={outerTextContainerRef}
                         // max-h-40
-                        className={`rounded-lg  ${inputFocus ? 'bg-teal-950 text-teal-600' : 'bg-teal-800 text-teal-700'} text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full`}
+                        className={`rounded-lg  ${inputFocus ? 'secondary-color text-color' : 'secondary-color text-color'} text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full`}
                         onClick={onFocus}
                     >
                         {!isDisabled && (
                             <div
                                 id="caret"
-                                className={`bg-orange-400 transition-all duration-75 ${timerRef.current?.rawTime() && timerRef.current.rawTime() > 0 ? 'animation-none' : ''}`}
+                                className={`caret-color transition-all duration-75 ${timerRef.current?.rawTime() && timerRef.current.rawTime() > 0 ? 'animation-none' : ''}`}
                                 style={{
                                     left: `${caretPosition.x > 0 && caretPosition.x}px`,
                                     top: `${caretPosition.y > 0 && caretPosition.y}px`,
@@ -457,7 +457,7 @@ const Home = () => {
                             {wordArray.map((word: string, index: number) => (
                                 <div key={index} className={'word'}>
                                     <div
-                                        className={`${showIncorrectWord ? '' : 'hidden'} incorrect-word `}
+                                        className={`error-color ${showIncorrectWord ? '' : 'hidden'} incorrect-word `}
                                     >
                                         {word
                                             .split('')
@@ -495,12 +495,12 @@ const Home = () => {
                         </div>
                     </div>
                     {quoteSource && (
-                        <div className="text-teal-500">
+                        <div className="text-color">
                             Source: {quoteSource}ss
                         </div>
                     )}
                     {/* Reset Button */}
-                    <div className="text-teal-200 text-2xl mt-5">
+                    <div className="text-active-color text-2xl mt-5">
                         <Tooltip message="Reset">
                             <button onClick={resetBoard}>
                                 <RxReset />
@@ -508,7 +508,7 @@ const Home = () => {
                         </Tooltip>
                     </div>
                     {/* Stats */}
-                    <div className="flex flex-col text-teal-100">
+                    <div className="flex flex-col text-active-color">
                         {isDisabled && <TypingStats />}
                         <div className={'flex flex-col justify-start'}>
                             <div className="text-left">

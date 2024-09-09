@@ -23,9 +23,9 @@ import Tooltip from './Tooltip';
 import ColorPicker from './colorPicker';
 
 const menuStyle = 'cursor-pointer mx-2 leading-10';
-const activeMenuStyle = 'text-teal-200 underline underline-offset-8';
+const activeMenuStyle = 'text-active-color underline underline-offset-8';
 const hoverMenuStyle =
-    'hover:text-teal-500 hover:underline hover:underline-offset-8';
+    'hover:text-color hover:underline hover:underline-offset-8';
 
 const ConfigToolbar = () => {
     const {
@@ -82,7 +82,7 @@ const ConfigToolbar = () => {
                 className={`w-full h-full flex justify-center items-center absolute top-0 left-0`}
             > */}
             <ul
-                className={`${openModal ? 'block absolute top-30  m-auto left-0 right-0 max-height-auto' : 'hidden'} lg:relative lg:flex flex-col sm:flex-row bg-teal-800 justify-evenly items-center rounded-md text-teal-500 p-3 pt-10 lg:pt-3 transition-all ease-in-out duration-300 mb-5 z-20 w-96 lg:w-auto`}
+                className={`${openModal ? 'block absolute top-30  m-auto left-0 right-0 max-height-auto' : 'hidden'} lg:relative lg:flex flex-col sm:flex-row primary-color justify-evenly items-center rounded-md text-color p-3 pt-10 lg:pt-3 transition-all ease-in-out duration-300 mb-5 z-20 w-96 lg:w-auto`}
             >
                 {openModal && (
                     <div
@@ -112,7 +112,7 @@ const ConfigToolbar = () => {
                 {/* toolbar separator */}
                 {showLeftTabs && (
                     <li className="w-full flex justify-center py-4 lg:py-0">
-                        <span className="bg-teal-950 w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
+                        <span className="secondary-color w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
                     </li>
                 )}
                 {/* toolbar main menu */}
@@ -130,7 +130,7 @@ const ConfigToolbar = () => {
                 {/* toolbar separator */}
                 {toggleMenuValue !== 'zen' && (
                     <li className="w-full flex justify-center py-4 lg:py-0">
-                        <span className="bg-teal-950 w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
+                        <span className="secondary-color w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
                     </li>
                 )}
                 {/* toolbar right tab */}

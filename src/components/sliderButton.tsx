@@ -14,7 +14,7 @@ const SliderButton = ({
 }: SliderButtonProps) => {
     const dispatch = useDispatch();
     return (
-        <label className="inline-flex items-center cursor-pointer ">
+        <label className="inline-flex items-center cursor-pointer text-color ">
             <input
                 type="checkbox"
                 value=""
@@ -22,13 +22,13 @@ const SliderButton = ({
                 onChange={() => dispatch(changeFunction())}
                 checked={checkedStatus}
             />
-            <div className="relative shadow-slider w-11 h-6 bg-teal-900 rounded-full peer peer-focus:ring-4 peer-focus:ring-teal-900 dark:peer-focus:ring-teal-900 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-teal-700 after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-teal-700 after:border-teal-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-900 hover:text-teal-500 hover:underline hover:underline-offset-8">
+            <div className="relative shadow-slider w-11 h-6 primary-color rounded-full peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:tertiary-color after:border after:rounded-full after:h-5 after:w-5 after:transition-all  hover:underline hover:underline-offset-8">
                 {checkedStatus ? (
-                    <span className="text-lg text-teal-200 flex justify-start items-center w-full h-full">
+                    <span className="text-lg text-active-color flex justify-start items-center w-full h-full">
                         <IoEye />
                     </span>
                 ) : (
-                    <span className="text-lg text-teal-200 flex justify-end items-center w-full h-full">
+                    <span className="text-lg text-active-color flex justify-end items-center w-full h-full">
                         <IoEyeOff />
                     </span>
                 )}

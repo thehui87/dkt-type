@@ -5,6 +5,7 @@ import './index.css';
 import { store } from './redux/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ThemeContextProvider } from './context/themeContext';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -13,7 +14,9 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <Provider store={store}>
-            <App />
+            <ThemeContextProvider>
+                <App />
+            </ThemeContextProvider>
         </Provider>
     </React.StrictMode>
 );

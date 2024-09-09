@@ -19,7 +19,7 @@ function App() {
             {/* <header className="App-header">
                 <Logo className="App-logo w-48 h-48" />
             </header> */}
-            <div className="bg-teal-900 h-dvh">
+            <div className="bg-color h-dvh">
                 <BrowserRouter>
                     <Navbar />
                     <Routes>

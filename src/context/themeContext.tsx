@@ -1,69 +1,99 @@
-import React, { createContext, useContext, useState } from 'react';
-// import { useDispatch } from "react-redux";
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../redux/store';
+import { colorArray } from '../constants/colorList';
+import { setColorPickerSelection } from '../redux/toolbar/toolbar.slice';
 
-interface Props {
-    children?: React.ReactNode;
-    // any props that come into the component
-}
+// interface Props {
+//     children?: React.ReactNode;
+//     // any props that come into the component
+// }
 
-const themeInitialValue = {
-    theme: 'light',
-    toggleTheme: () => {},
+const themeInitialValue = {};
+
+type ThemeContextType = {
+    changeThemeColor: (colorName: string, hover?: boolean) => void;
 };
-const ThemeContext = createContext(themeInitialValue);
 
-export const useThemeContext = () => useContext(ThemeContext);
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeContextProvider = ({ children, ...props }: Props) => {
+export const useThemeContext = () => {
+    const context = useContext(ThemeContext);
+    if (!context) {
+        throw new Error('useThemeContext must be used within a MyProvider');
+    }
+    return context;
+};
+
+// : React.ReactNode
+export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
     const [theme, setTheme] = useState('light');
-    // const [loading, setLoading] = useState(false);
-    // const dispatch = useDispatch();
-    // const [archiveLoader, setArchiveLoader] = useState(false);
+    const { colorPickerSelection } = useSelector(
+        (state: RootState) => state.toolbar
+    );
+    const dispatch = useDispatch();
 
-    const toggleTheme = () => {
-        setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-    };
+    const changeThemeColor = useCallback(
+        (colorName: string, hover: boolean = false) => {
+            let colorItem = colorArray.filter((item) => item.name == colorName);
 
-    // const toast = useSnackbar();
-    // const { notificationText } = toast;
+            if (colorItem.length > 0) {
+                if (!hover) dispatch(setColorPickerSelection(colorName));
 
-    // const archivePolicyApi = useCallback(
-    //   (data, onSuccessCallback = () => {}, onErrorCallback = () => {}) => {
-    //     // setArchiveLoader(true);
-    //     dispatch(archivePolicy({ ...data }))
-    //       .unwrap()
-    //       .then(res => {
-    //         onSuccessCallback(res);
-    //         // setArchiveLoader(false);
-    //         toast.success(
-    //           data?.is_archived === true
-    //             ? SUCCESSFULLY_ARCHIVED_POLICY
-    //             : SUCCESSFULLY_UNARCHIVED_POLICY,
-    //         );
-    //       })
-    //       .catch(err => {
-    //         onErrorCallback(err);
-    //         setArchiveLoader(false);
-    //         if (err?.response?.status === 424) {
-    //           return;
-    //         } else if (err?.response?.status === 403) {
-    //           toast.error(NOT_AUTHORIZED_TO_ARCHIVE_THIS_POLICY);
-    //         } else toast.error(SOMETHING_WENT_WRONG_AT_OUR_END);
-    //       });
-    //   },
-    //   [],
-    // );
+                const root = document.documentElement;
+                // Or
+                // const root = document.querySelector(':root');
 
-    // const values = useMemo(() => {
-    //   return {
-    //     loading,
-    //     setLoading,
-    //   };
-    // }, [loading, setLoading]);
+                // to access the primary color
+                // const primaryColor =
+                //     getComputedStyle(root).getPropertyValue('--primary-color');
+
+                // to set new color
+                root.style.setProperty('--bg-color', colorItem[0].color.bg);
+                root.style.setProperty(
+                    '--primary-color',
+                    colorItem[0].color.primary
+                );
+                root.style.setProperty(
+                    '--secondary-color',
+                    colorItem[0].color.secondary
+                );
+                root.style.setProperty(
+                    '--caret-color',
+                    colorItem[0].color.caret
+                );
+                root.style.setProperty('--text-color', colorItem[0].color.text);
+                root.style.setProperty(
+                    '--text-active-color',
+                    colorItem[0].color.textActive
+                );
+                root.style.setProperty(
+                    '--error-color',
+                    colorItem[0].color.error
+                );
+            }
+        },
+        []
+    );
+
+    const values = useMemo(
+        () => ({
+            // return {
+            changeThemeColor,
+            // };
+        }),
+        [changeThemeColor]
+    );
 
     return (
-        <ThemeContext.Provider {...props} value={{ theme, toggleTheme }}>
-            {children}
-        </ThemeContext.Provider>
+        <ThemeContext.Provider value={values}>{children}</ThemeContext.Provider>
     );
 };

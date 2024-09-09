@@ -66,7 +66,7 @@ code {
 }
 /* var(--error-color) */
 .word.typed.error {
-    border-bottom: 2px dashed red;
+    border-bottom: 2px dashed var(--error-color);
 }
 .incorrect-word-demo,
 .incorrect-word {
@@ -76,10 +76,14 @@ code {
     padding: 0px 8px;
     display: inline-block;
     font-size: 16px;
-    color: red;
+    color: var(--error-color);
     pointer-events: none;
     margin: auto;
     right: 0;
+}
+.incorrect-word-demo {
+    display: flex;
+    justify-content: center;
 }
 .incorrect-word-demo span,
 .incorrect-word span {
@@ -110,7 +114,7 @@ code {
 .letter-demo.incorrect-demo,
 .incorrect.extra,
 .letter.incorrect {
-    color: red;
+    color: var(--error-color);
 }
 #caret {
     height: 1em;
