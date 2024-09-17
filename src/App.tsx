@@ -8,12 +8,27 @@ import About from './pages/about';
 import Profile from './pages/profile';
 import MyFooter from './components/footer';
 import Test from './pages/test';
+import {
+    LoginForm,
+    RegisterForm,
+    ForgotPasswordForm,
+    ResetForm,
+} from './pages/auth';
+import { useState } from 'react';
 
 function App() {
+    const [authPage, setAuthPage] = useState<'login' | 'register' | 'reset'>(
+        'login'
+    );
     // let location = useLocation();
     // console.log(location);
 
     // window.location.href
+
+    const handleAuth = (email: string, password?: string) => {
+        console.log(`Email: ${email}, Password: ${password}`);
+    };
+
     return (
         <div className="App">
             {/* <header className="App-header">
@@ -27,6 +42,32 @@ function App() {
                         <Route path="/about" element={<About />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/test" element={<Test />} />
+                        <Route
+                            path="/login"
+                            element={<LoginForm onSubmit={handleAuth} />}
+                        />
+                        <Route
+                            path="/register"
+                            element={
+                                <RegisterForm
+                                    onSubmit={handleAuth}
+                                    switchTo={setAuthPage}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/forgot-password"
+                            element={
+                                <ForgotPasswordForm
+                                    onSubmit={handleAuth}
+                                    switchTo={setAuthPage}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/reset-password"
+                            element={<ResetForm onSubmit={handleAuth} />}
+                        />
                     </Routes>
                 </BrowserRouter>
             </div>

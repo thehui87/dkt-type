@@ -19,7 +19,7 @@ const ColorPicker = () => {
     return (
         <Menu as="div" className="relative inline-block text-left">
             <div>
-                <MenuButton className="inline-flex w-full justify-center items-center gap-x-1.5 rounded-md primary-color px-3 py-2 text-sm font-semibold text-active-color shadow-sm ring-inset ring-0 hover:secondary-color">
+                <MenuButton className="inline-flex w-full justify-center items-center gap-x-1.5 rounded-md primary-color px-3 py-2 text-sm font-semibold text-active-color shadow-sm ring-inset ring-0 hover:caret-color">
                     <IoColorPaletteSharp />
                     {colorPickerSelection ?? 'Options'}
                     <IoChevronDown
@@ -39,7 +39,7 @@ const ColorPicker = () => {
                             <MenuItem key={`colorpicker-${item.name}-${index}`}>
                                 <a
                                     href="#"
-                                    className="flex justify-between px-4 py-2 text-active-color data-[focus]:secondary-color data-[focus]:text-active-color"
+                                    className="flex justify-between px-4 py-2 text-active-color data-[focus]:secondary-color data-[focus]:text-active-color hover:bg-slate-50 hover:bg-opacity-20"
                                     onClick={() => changeThemeColor(item.name)}
                                     onMouseOver={() =>
                                         changeThemeColor(item.name, true)

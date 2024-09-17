@@ -221,7 +221,7 @@ const ConfigToolbar = () => {
                         <SliderButton
                             checkedStatus={showIncorrectCounter}
                             changeFunction={setToggleShowIncorrectCounter}
-                            children={' incorrect counter'}
+                            children={' Wrong Key Counter'}
                         />
                     </Tooltip>
                 </div>

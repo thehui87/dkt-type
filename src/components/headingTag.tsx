@@ -13,7 +13,7 @@ const HeadingTag = ({ size = 'text-lg', children }: Props) => {
     // useEffect(() => {
     //     setHeadingSize(`text-${size}`);
     // }, [size]);
-    return <div className={`${size} font-bold text-teal-200`}>{children}</div>;
+    return <div className={`${size} font-bold text-color`}>{children}</div>;
 };
 
 export { HeadingTag };

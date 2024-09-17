@@ -24,7 +24,7 @@
     background-color: var(--secondary-color);
 }
 .tertiary-color {
-    background-color: var(--text-color);
+    background: var(--text-color);
 }
 
 .caret-color {

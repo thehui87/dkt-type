@@ -402,7 +402,10 @@ const Home = () => {
 
     return (
         <div>
-            <div className="h-full flex items-center justify-center absolute top-0 w-full">
+            <div
+                className="flex items-center justify-center relative top-0 w-full"
+                style={{ height: 'calc(100vh - 168px)' }}
+            >
                 {/* pointer-events-none */}
                 <div className="flex flex-col items-center mx-36 max-sm:mx-10 max-w-7xl">
                     {/* Toolbar */}
