@@ -1,18 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginUsers, refreshAccessToken } from '../../redux/auth/auth.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
+// import { useAuth } from '../../context/authContext';
+// import { login,  } from '../../context/authContext';
+import { useAuth } from '../../context/authContext';
 
 interface LoginFormProps {
     onSubmit: (email: string, password: string) => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+interface LoginData {
+    login: string;
+    password: string;
+}
+// { onSubmit }
+const LoginForm = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [hover, setHover] = useState<boolean>(false);
+    const dispatch = useDispatch<AppDispatch>();
+    const { login, logout } = useAuth();
+
+    const { loading, userLoggedIn } = useSelector(
+        (state: RootState) => state.auth
+    );
+
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const onSuccessCallback = (res: any) => {
+            navigate('/dashboard');
+        };
+
+        const onErrorCallback = (res: any) => {
+            setError(res);
+        };
 
         // Simple validation
         if (!email || !password) {
@@ -20,10 +47,30 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
             return;
         }
 
+        const data: LoginData = {
+            login: email,
+            password,
+        };
+        login(data, onSuccessCallback, onErrorCallback);
+        // .unwrap()
+        // .then((response: any) => {
+        //     // console.log('logged in...');
+        //     navigate('/dashboard');
+        // })
+        // .catch((error: any) => {
+        //     setError(error?.response?.data);
+        // });
+
         // Clear error and submit the form
         setError('');
-        onSubmit(email, password);
+        // onSubmit(email, password);
     };
+
+    useEffect(() => {
+        if (userLoggedIn) {
+            navigate('/dashboard');
+        }
+    }, [userLoggedIn]);
 
     return (
         <div
@@ -79,10 +126,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                     {error && <p className="text-red-500 mb-4">{error}</p>}
                     <button
                         type="submit"
-                        className="w-full tertiary-color text-white py-2 rounded-md hover:bg-white/5 transition duration-300"
+                        className={`w-full tertiary-color text-white py-2 rounded-md transition duration-300 ${hover ? 'buttonHover' : ''}`}
+                        // style={{
+                        //     backgroundColor: hover
+                        //         ? 'color-mix(in srgb, var(--tertiary-color) 80%, white 20%)'
+                        //         : '',
+                        // }}
+                        onMouseEnter={() => setHover(true)}
+                        onMouseOut={() => setHover(false)}
                     >
-                        Login
+                        Login {loading ? 'loading..' : ''}
                     </button>
+
                     <div className="text-center mt-4 text-active-color">
                         Don't have an account?
                         <button
@@ -94,6 +149,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                     </div>
                 </form>
             </div>
+            <button
+                className="text-active-color underline ml-2"
+                onClick={() => dispatch(refreshAccessToken())}
+            >
+                Refresh Token
+            </button>
         </div>
     );
 };

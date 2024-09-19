@@ -2,6 +2,7 @@ import React, {
     createContext,
     useCallback,
     useContext,
+    useEffect,
     useMemo,
     useState,
 } from 'react';
@@ -46,7 +47,12 @@ export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({
             let colorItem = colorArray.filter((item) => item.name == colorName);
 
             if (colorItem.length > 0) {
+                // setTheme(colorItem[0].name);
+
                 if (!hover) dispatch(setColorPickerSelection(colorName));
+
+                // set theme to local storage
+                localStorage.setItem('theme', colorName);
 
                 const root = document.documentElement;
                 // Or
@@ -70,6 +76,10 @@ export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({
                     '--caret-color',
                     colorItem[0].color.caret
                 );
+                root.style.setProperty(
+                    '--tertiary-color',
+                    colorItem[0].color.text
+                );
                 root.style.setProperty('--text-color', colorItem[0].color.text);
                 root.style.setProperty(
                     '--text-active-color',
@@ -84,11 +94,16 @@ export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({
         []
     );
 
+    useEffect(() => {
+        const savedTheme: any = localStorage?.getItem('theme');
+        if (savedTheme) {
+            changeThemeColor(savedTheme);
+        }
+    }, []);
+
     const values = useMemo(
         () => ({
-            // return {
             changeThemeColor,
-            // };
         }),
         [changeThemeColor]
     );

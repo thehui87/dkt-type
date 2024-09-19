@@ -20,7 +20,6 @@ import {
 import { IoClose } from 'react-icons/io5';
 import { SliderButton } from './sliderButton';
 import Tooltip from './Tooltip';
-import ColorPicker from './colorPicker';
 
 const menuStyle = 'cursor-pointer mx-2 leading-10';
 const activeMenuStyle = 'text-active-color underline underline-offset-8';
@@ -225,7 +224,6 @@ const ConfigToolbar = () => {
                         />
                     </Tooltip>
                 </div>
-                <ColorPicker />
                 {/* <button
                     id="dropdownHoverButton"
                     data-dropdown-toggle="dropdownHover1"

@@ -1,12 +1,12 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 // import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { IoChevronDown } from 'react-icons/io5';
-import { useSelector, useDispatch } from 'react-redux';
+import { IoChevronUp } from 'react-icons/io5'; //IoChevronDown
+import { useSelector } from 'react-redux'; //useDispatch
 import { RootState } from '../redux/store';
 
 import { colorArray } from '../constants/colorList';
 import { FaCheck } from 'react-icons/fa6';
-import { useEffect } from 'react';
+// import { Fragment, useEffect } from 'react';
 import { useThemeContext } from '../context/themeContext';
 import { IoColorPaletteSharp } from 'react-icons/io5';
 
@@ -22,16 +22,33 @@ const ColorPicker = () => {
                 <MenuButton className="inline-flex w-full justify-center items-center gap-x-1.5 rounded-md primary-color px-3 py-2 text-sm font-semibold text-active-color shadow-sm ring-inset ring-0 hover:caret-color">
                     <IoColorPaletteSharp />
                     {colorPickerSelection ?? 'Options'}
-                    <IoChevronDown
+                    <IoChevronUp
                         aria-hidden="true"
                         className="-mr-1 h-5 w-5 text-active-color"
                     />
+                    {/* {({ active }) =>
+                        active ? (
+                            <IoChevronDown
+                                aria-hidden="true"
+                                className="-mr-1 h-5 w-5 text-active-color"
+                            />
+                        ) : (
+                            <IoChevronUp
+                                aria-hidden="true"
+                                className="-mr-1 h-5 w-5 text-active-color"
+                            />
+                        )
+                    } */}
+                    {/* {({ active }) =>
+                        
+                    } */}
                 </MenuButton>
             </div>
-
+            {/* bottom-16 */}
             <MenuItems
                 transition
-                className="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md primary-color shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in h-80 overflow-auto"
+                anchor="top end"
+                className="z-10 mt-2 w-80 origin-top-right rounded-md primary-color shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in h-80 overflow-auto"
             >
                 <div className="py-1">
                     {colorArray.map((item, index) => {

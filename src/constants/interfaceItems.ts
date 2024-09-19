@@ -15,3 +15,10 @@ export interface ColorObject {
         error: string;
     };
 }
+
+export interface SuccessCallback<T> {
+    (res?: any): void;
+}
+export interface ErrorCallback<T> {
+    (res?: any): void;
+}

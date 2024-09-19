@@ -6,18 +6,13 @@ import {
     useCallback,
     // ElementRef,
 } from 'react';
-import { HeadingTag } from '../components/headingTag';
 import { RxReset } from 'react-icons/rx';
 import Tooltip from '../components/Tooltip';
 import Timer, { TimerHandle } from '../components/timer';
 import ConfigToolbar from '../components/toolbar';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
-import {
-    setStats,
-    resetStats,
-    TypingStatsState,
-} from '../redux/toolbar/typingstats.slice';
+import { setStats, resetStats } from '../redux/typingstats/typingstats.slice';
 import TypingStats from '../components/stats';
 import { resetWordArray, setToggleModal } from '../redux/toolbar/toolbar.slice';
 

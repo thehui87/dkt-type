@@ -5,14 +5,14 @@ interface ResetFormProps {
     onSubmit: (email: string) => void;
 }
 
-const ResetForm: React.FC<ResetFormProps> = ({ onSubmit }) => {
+const ResetForm = () => {
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(password);
+        // onSubmit(password);
     };
 
     return (

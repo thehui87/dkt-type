@@ -6,28 +6,34 @@ import {
     IoPersonCircleSharp,
     IoInformationCircle,
 } from 'react-icons/io5';
+import { useAuth } from '../context/authContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 const navMenuList = [
     {
         name: 'Home',
         linkTo: '/',
         icon: <IoHomeSharp />,
+        // auth: false,
     },
     {
         name: 'About',
         linkTo: '/about',
         icon: <IoInformationCircle />,
+        // auth: false,
     },
-    {
-        name: 'Profile',
-        linkTo: '/profile',
-        icon: <IoPersonCircleSharp />,
-    },
-    {
-        name: 'Login',
-        linkTo: '/login',
-        icon: <IoLogIn />,
-    },
+    // {
+    //     name: 'Profile',
+    //     linkTo: '/profile',
+    //     icon: <IoPersonCircleSharp />,
+    //     auth: true,
+    // },
+    // {
+    //     name: 'Login',
+    //     linkTo: '/login',
+    //     icon: <IoLogIn />,
+    // },
 ];
 
 const hamburgerMenuStyle =
@@ -39,6 +45,8 @@ const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
+    const { logout } = useAuth();
+    const { userLoggedIn } = useSelector((state: RootState) => state.auth);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -52,6 +60,26 @@ const Navbar = () => {
     useEffect(() => {
         setCurrentRoute(location.pathname);
     }, [location.pathname]);
+
+    const handleLogout = () => {
+        const onSuccessCallback = (res: any) => {
+            navigate('/login');
+        };
+
+        const onErrorCallback = (res: any) => {
+            console.error(res);
+        };
+        logout(onSuccessCallback, onErrorCallback);
+    };
+
+    const handleUserStatus = () => {
+        if (userLoggedIn) {
+            handleLogout();
+        } else {
+            navigate('/login');
+        }
+        setIsOpen(false);
+    };
 
     return (
         <div className="flex justify-between py-5 px-3 primary-color text-color border-b-2 border-teal-800 items-center">
@@ -95,6 +123,35 @@ const Navbar = () => {
                         </li>
                     );
                 })}
+                {userLoggedIn && (
+                    <li
+                        key={'nav-menu-profile'}
+                        className={`flex items-center font-bold hover:text-active-color ${
+                            currentRoute === '/profile'
+                                ? 'font-bold text-active-color'
+                                : ''
+                        }`}
+                    >
+                        <span className="mr-2 text-xl">
+                            <IoPersonCircleSharp />
+                        </span>
+                        <Link to={'/profile'}>{'Profile'}</Link>
+                    </li>
+                )}
+
+                <li
+                    key={'nav-menu-auth'}
+                    className={`flex items-center font-bold hover:text-active-color ${
+                        currentRoute === '/login'
+                            ? 'font-bold text-active-color'
+                            : ''
+                    }`}
+                >
+                    <span className="mr-2 text-xl">{<IoLogIn />}</span>
+                    <button onClick={handleUserStatus}>
+                        {userLoggedIn ? 'Logout' : 'Login'}
+                    </button>
+                </li>
             </ul>
             {/* Mobile menu */}
             <button
@@ -138,12 +195,53 @@ const Navbar = () => {
                                 </span>
                                 {item.name}
                             </p>
-                            {/* <p className="text-white/50">
-                                Measure actions your users take
-                            </p> */}
                         </a>
                     );
                 })}
+                {userLoggedIn && (
+                    <a
+                        key={'nav-menu-auth-mobile'}
+                        className="w-full block py-7 px-3 transition hover:bg-white/5 cursor-pointer"
+                        onClick={handleUserStatus}
+                    >
+                        <p
+                            className={`font-semibold  flex items-center ${currentRoute === '/profile' ? 'text-active-color' : 'text-color'}`}
+                        >
+                            <span className="mr-2 text-xl">
+                                <IoPersonCircleSharp />
+                            </span>
+                            {'Profile'}
+                        </p>
+                    </a>
+                )}
+
+                <a
+                    key={'nav-menu-auth-mobile'}
+                    className="w-full block py-7 px-3 transition hover:bg-white/5 cursor-pointer"
+                    onClick={handleUserStatus}
+                >
+                    <p
+                        className={`font-semibold  flex items-center ${currentRoute === '/login' ? 'text-active-color' : 'text-color'}`}
+                    >
+                        <span className="mr-2 text-xl">
+                            <IoLogIn />
+                        </span>
+                        {userLoggedIn ? 'Logout' : 'Login'}
+                    </p>
+                </a>
+                {/* <li
+                    key={'nav-menu-auth'}
+                    className={`flex items-center font-bold hover:text-active-color ${
+                        currentRoute === '/login'
+                            ? 'font-bold text-active-color'
+                            : ''
+                    }`}
+                >
+                    <span className="mr-2 text-xl">{<IoLogIn />}</span>
+                    <button onClick={handleUserStatus}>
+                        {userLoggedIn ? 'Logout' : 'Login'}
+                    </button>
+                </li> */}
             </div>
 
             {/* Optional overlay */}

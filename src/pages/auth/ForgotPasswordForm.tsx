@@ -6,16 +6,13 @@ interface ForgotPasswordFormProps {
     switchTo: (page: 'login' | 'register' | 'reset') => void;
 }
 
-const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
-    onSubmit,
-    switchTo,
-}) => {
+const ForgotPasswordForm = () => {
     const [email, setEmail] = useState<string>('');
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(email);
+        // onSubmit(email);
     };
 
     return (

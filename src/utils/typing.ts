@@ -4,7 +4,7 @@ import {
     setStats,
     // resetStats,
     TypingStatsState,
-} from '../redux/toolbar/typingstats.slice';
+} from '../redux/typingstats/typingstats.slice';
 // import { useSelector } from 'react-redux';
 import { TimerHandle } from '../components/timer';
 import { RootState } from '../redux/store';

@@ -39,3 +39,6 @@
 .error-color {
     color: var(--error-color);
 }
+.buttonHover {
+    background-color: color-mix(in srgb, var(--tertiary-color) 80%, white 20%);
+}

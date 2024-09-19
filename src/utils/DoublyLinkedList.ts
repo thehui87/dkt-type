@@ -1,16 +1,16 @@
-// Define a node in the linked list
+// Define a node in the doubly linked list
 class ListNode<T> {
     value: T;
     next: ListNode<T> | null = null;
+    prev: ListNode<T> | null = null;
 
     constructor(value: T) {
         this.value = value;
-        this.next = null;
     }
 }
 
-// Define the linked list class
-class LinkedList<T> {
+// Define the doubly linked list class
+class DoublyLinkedList<T> {
     head: ListNode<T> | null = null;
     tail: ListNode<T> | null = null;
     size: number = 0;
@@ -23,24 +23,31 @@ class LinkedList<T> {
             this.head = newNode;
             this.tail = newNode;
         } else {
-            if (this.tail) this.tail.next = newNode;
-            this.tail = newNode;
+            if (this.tail) {
+                this.tail.next = newNode;
+                newNode.prev = this.tail;
+                this.tail = newNode;
+            }
         }
 
         this.size++;
     }
 
-    // Remove the first word from the linked list (useful if you want to remove words during gameplay)
-    removeFirst() {
-        if (!this.head) return null;
-        const removedValue = this.head.value;
-        this.head = this.head.next;
-        this.size--;
+    // Remove the last word from the linked list
+    removeLast(): T | null {
+        if (!this.tail) return null;
 
-        if (!this.head) {
+        const removedValue = this.tail.value;
+
+        if (this.tail.prev) {
+            this.tail = this.tail.prev;
+            this.tail.next = null;
+        } else {
+            this.head = null;
             this.tail = null;
         }
 
+        this.size--;
         return removedValue;
     }
 
@@ -65,4 +72,4 @@ class LinkedList<T> {
     }
 }
 
-export default LinkedList;
+export default DoublyLinkedList;

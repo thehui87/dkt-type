@@ -6,7 +6,7 @@ interface RegisterFormProps {
     switchTo: (page: 'login' | 'register' | 'reset') => void;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
+const RegisterForm = () => {
     const [email, setEmail] = useState<string>('');
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -15,7 +15,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(email, password);
+        // onSubmit(email, password);
     };
 
     return (
