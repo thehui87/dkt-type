@@ -22,3 +22,22 @@ export interface SuccessCallback<T> {
 export interface ErrorCallback<T> {
     (res?: any): void;
 }
+
+export interface LoginData {
+    login: string;
+    password: string;
+}
+
+export interface RegisterData {
+    email: string;
+    username: string;
+    password: string;
+}
+
+export interface EmailData {
+    email: string;
+}
+
+export interface NewPassworData {
+    newPassword: string;
+}

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import ButtonSpinner from '../../components/buttonSpinner';
+import { useAuth } from '../../context/authContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { EmailData } from '../../constants/interfaceItems';
 interface ForgotPasswordFormProps {
     onSubmit: (email: string) => void;
     switchTo: (page: 'login' | 'register' | 'reset') => void;
@@ -10,9 +14,31 @@ const ForgotPasswordForm = () => {
     const [email, setEmail] = useState<string>('');
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
+    const { forgotPassword } = useAuth();
+
+    const { loading } = useSelector((state: RootState) => state.auth);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // onSubmit(email);
+
+        const onSuccessCallback = (res: any) => {
+            navigate('/login');
+        };
+
+        const onErrorCallback = (res: any) => {
+            setError(res);
+        };
+
+        // Simple validation
+        if (!email) {
+            setError('Email is required');
+            return;
+        }
+
+        const data: EmailData = {
+            email,
+        };
+        forgotPassword(data, onSuccessCallback, onErrorCallback);
     };
 
     return (
@@ -42,12 +68,16 @@ const ForgotPasswordForm = () => {
                         />
                     </div>
                     {error && <p className="text-red-500 mb-4">{error}</p>}
-                    <button
+                    {/* <button
                         type="submit"
                         className="w-full tertiary-color text-white py-2 rounded-md hover:bg-white/5"
                     >
                         Submit
-                    </button>
+                    </button> */}
+
+                    <ButtonSpinner type="submit" showSpinner={loading}>
+                        Submit
+                    </ButtonSpinner>
                     <div className="text-center mt-4 text-active-color">
                         Back to
                         <button

@@ -31,14 +31,6 @@ function App() {
     // const [authPage, setAuthPage] = useState<'login' | 'register' | 'reset'>(
     //     'login'
     // );
-    // let location = useLocation();
-    // console.log(location);
-
-    // window.location.href
-
-    // const handleAuth = (email: string, password?: string) => {
-    //     console.log(`Email: ${email}, Password: ${password}`);
-    // };
 
     return (
         <div className="App">
@@ -86,7 +78,7 @@ function App() {
                                 element={<ForgotPasswordForm />}
                             />
                             <Route
-                                path="/reset-password"
+                                path="/reset-password/:token"
                                 element={<ResetForm />}
                             />
                         </Routes>

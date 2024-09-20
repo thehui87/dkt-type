@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUsers, refreshAccessToken } from '../../redux/auth/auth.api';
+import { refreshAccessToken } from '../../redux/auth/auth.api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 // import { useAuth } from '../../context/authContext';
 // import { login,  } from '../../context/authContext';
 import { useAuth } from '../../context/authContext';
+import ButtonSpinner from '../../components/buttonSpinner';
 
 interface LoginFormProps {
     onSubmit: (email: string, password: string) => void;
@@ -124,19 +125,10 @@ const LoginForm = () => {
                         </div>
                     </div>
                     {error && <p className="text-red-500 mb-4">{error}</p>}
-                    <button
-                        type="submit"
-                        className={`w-full tertiary-color text-white py-2 rounded-md transition duration-300 ${hover ? 'buttonHover' : ''}`}
-                        // style={{
-                        //     backgroundColor: hover
-                        //         ? 'color-mix(in srgb, var(--tertiary-color) 80%, white 20%)'
-                        //         : '',
-                        // }}
-                        onMouseEnter={() => setHover(true)}
-                        onMouseOut={() => setHover(false)}
-                    >
-                        Login {loading ? 'loading..' : ''}
-                    </button>
+
+                    <ButtonSpinner type="submit" showSpinner={loading}>
+                        Login
+                    </ButtonSpinner>
 
                     <div className="text-center mt-4 text-active-color">
                         Don't have an account?

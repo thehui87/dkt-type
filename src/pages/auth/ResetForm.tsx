@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/authContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import ButtonSpinner from '../../components/buttonSpinner';
+import { useLocation } from 'react-router-dom';
 
 interface ResetFormProps {
     onSubmit: (email: string) => void;
@@ -10,9 +15,29 @@ const ResetForm = () => {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
+    const { resetPassword } = useAuth();
+    const location = useLocation();
+    const { loading } = useSelector((state: RootState) => state.auth);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // onSubmit(password);
+        const onSuccessCallback = (res: any) => {
+            navigate('/dashboard');
+        };
+
+        const onErrorCallback = (res: any) => {
+            setError(res);
+        };
+        const data = {
+            newPassword: password,
+        };
+        const token = location.pathname.substring(
+            location.pathname.lastIndexOf('/') + 1,
+            location.pathname.length
+        );
+
+        resetPassword(data, token, onSuccessCallback, onErrorCallback);
     };
 
     return (
@@ -59,12 +84,9 @@ const ResetForm = () => {
                         />
                     </div>
                     {error && <p className="text-red-500 mb-4">{error}</p>}
-                    <button
-                        type="submit"
-                        className="w-full tertiary-color text-white py-2 rounded-md hover:bg-white/5"
-                    >
+                    <ButtonSpinner type="submit" showSpinner={loading}>
                         Submit
-                    </button>
+                    </ButtonSpinner>
                     <div className="text-center mt-4 text-active-color">
                         Back to
                         <button

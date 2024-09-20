@@ -12,7 +12,6 @@ export const getApiWithAuthentication = (token: string, url: string) => {
 };
 
 export const postApi = async (url: string, data: object, extraConfig = {}) => {
-    // console.log('post api', data);
     const config = {
         method: 'post',
         url: url,
@@ -24,15 +23,6 @@ export const postApi = async (url: string, data: object, extraConfig = {}) => {
     };
     return await axios(config);
 };
-
-// export const postApiWithRT = async (url: string, data = {}) => {
-//     return await axios.post(url, data, {
-//         withCredentials: true, // Include cookies
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     });
-// };
 
 export const postApiWithAuthentication = (
     token: string,

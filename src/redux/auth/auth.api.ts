@@ -1,12 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { postApi } from '../../utils/api';
+import {
+    LoginData,
+    RegisterData,
+    EmailData,
+    NewPassworData,
+} from '../../constants/interfaceItems';
+import { useLocation } from 'react-router-dom';
 
-interface LoginData {
-    login: string;
-    password: string;
-}
-
-export const loginUsers = createAsyncThunk(
+export const loginUser = createAsyncThunk(
     'auth/login',
     async (dataObj: LoginData, { rejectWithValue }) => {
         try {
@@ -24,12 +26,47 @@ export const loginUsers = createAsyncThunk(
 
 export const registerUser = createAsyncThunk(
     'auth/register',
-    async (dataObj: LoginData, { rejectWithValue }) => {
+    async (dataObj: RegisterData, { rejectWithValue }) => {
         try {
             const { data } = await postApi(
-                `${process.env.REACT_APP_API_URL}/auth/login`,
+                `${process.env.REACT_APP_API_URL}/auth/register`,
                 dataObj,
                 { withCredentials: true }
+            );
+            return data;
+        } catch (error: any) {
+            return rejectWithValue(error?.response?.data);
+        }
+    }
+);
+
+export const forgotPaswordURL = createAsyncThunk(
+    'auth/forgot-password',
+    async (dataObj: EmailData, { rejectWithValue }) => {
+        try {
+            const { data } = await postApi(
+                `${process.env.REACT_APP_API_URL}/auth/forgot-password`,
+                dataObj
+                // { withCredentials: true }
+            );
+            return data;
+        } catch (error: any) {
+            return rejectWithValue(error?.response?.data);
+        }
+    }
+);
+
+export const resetPasswordURL = createAsyncThunk(
+    'auth/reset-password',
+    async (
+        { dataObj, token }: { dataObj: NewPassworData; token: string },
+        { rejectWithValue }
+    ) => {
+        try {
+            const { data } = await postApi(
+                `${process.env.REACT_APP_API_URL}/auth/reset-password/${token}`,
+                dataObj
+                // { withCredentials: true }
             );
             return data;
         } catch (error: any) {
@@ -82,8 +119,10 @@ export const logoutUser = createAsyncThunk('auth/logout', async () => {
 });
 
 export default {
-    loginUsers,
+    loginUser,
     refreshAccessToken,
     logoutUser,
     registerUser,
+    forgotPaswordURL,
+    resetPasswordURL,
 };

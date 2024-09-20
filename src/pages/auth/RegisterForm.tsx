@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { useAuth } from '../../context/authContext';
+import ButtonSpinner from '../../components/buttonSpinner';
 
 interface RegisterFormProps {
     onSubmit: (email: string, password: string) => void;
@@ -12,10 +16,28 @@ const RegisterForm = () => {
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
+    const { register } = useAuth();
+
+    const { loading } = useSelector((state: RootState) => state.auth);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // onSubmit(email, password);
+
+        const onSuccessCallback = (res: any) => {
+            navigate('/login');
+        };
+
+        const onErrorCallback = (res: any) => {
+            setError(res);
+        };
+        let data = {
+            email,
+            username,
+            password,
+        };
+
+        register(data, onSuccessCallback, onErrorCallback);
     };
 
     return (
@@ -77,12 +99,15 @@ const RegisterForm = () => {
                         />
                     </div>
                     {error && <p className="text-red-500 mb-4">{error}</p>}
-                    <button
+                    {/* <button
                         type="submit"
                         className="w-full tertiary-color text-white py-2 rounded-md hover:bg-white/5"
                     >
                         Register
-                    </button>
+                    </button> */}
+                    <ButtonSpinner type="submit" showSpinner={loading}>
+                        Register
+                    </ButtonSpinner>
                     <div className="text-center mt-4 text-active-color">
                         Already have an account?
                         <button

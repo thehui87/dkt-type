@@ -2,40 +2,58 @@
 import React, {
     createContext,
     useContext,
-    useState,
+    // useState,
     ReactNode,
     useCallback,
     useMemo,
-    useEffect,
+    // useEffect,
 } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../redux/store';
-import { logoutUser, loginUsers } from '../redux/auth/auth.api';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import {
+    logoutUser,
+    loginUser,
+    registerUser,
+    forgotPaswordURL,
+    resetPasswordURL,
+} from '../redux/auth/auth.api';
 import { persistor } from '../redux/store';
 // import { SuccessCallback, ErrorCallback } from '../constants/interfaceItems';
-
-interface LoginData {
-    login: string;
-    password: string;
-}
-
-export interface SuccessCallback<T> {
-    (res?: any): void;
-}
-export interface ErrorCallback<T> {
-    (res?: any): void;
-}
+import {
+    LoginData,
+    RegisterData,
+    SuccessCallback,
+    ErrorCallback,
+    EmailData,
+    NewPassworData,
+} from '../constants/interfaceItems';
 
 interface AuthContextType {
-    isAuthenticated: boolean;
+    // isAuthenticated: boolean;
     logout: (
-        onSuccessCallback: (res?: any) => void,
-        onErrorCallback: (res?: any) => void
+        onSuccessCallback: SuccessCallback<any>,
+        onErrorCallback: ErrorCallback<any>
     ) => void;
     login: (
-        {}: LoginData,
-        onSuccessCallback: (res?: any) => void,
-        onErrorCallback: (res?: any) => void
+        data: LoginData,
+        onSuccessCallback: SuccessCallback<any>,
+        onErrorCallback: ErrorCallback<any>
+    ) => void;
+    register: (
+        data: RegisterData,
+        onSuccessCallback: SuccessCallback<any>,
+        onErrorCallback: ErrorCallback<any>
+    ) => void;
+    forgotPassword: (
+        data: EmailData,
+        onSuccessCallback: SuccessCallback<any>,
+        onErrorCallback: ErrorCallback<any>
+    ) => void;
+    resetPassword: (
+        data: NewPassworData,
+        token: string,
+        onSuccessCallback: SuccessCallback<any>,
+        onErrorCallback: ErrorCallback<any>
     ) => void;
 }
 
@@ -43,8 +61,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // React.FC<{ children: React.ReactNode }>
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const { userLoggedIn } = useSelector((state: RootState) => state.auth);
-    const [isAuthenticated, setIsAuthenticated] = useState(userLoggedIn);
+    // const { userLoggedIn } = useSelector((state: RootState) => state.auth);
+    // const [isAuthenticated, setIsAuthenticated] = useState(userLoggedIn);
 
     const login = useCallback(
         (
@@ -52,19 +70,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             onSuccessCallback: SuccessCallback<any>,
             onErrorCallback: ErrorCallback<any>
         ) => {
-            dispatch(loginUsers(data))
+            dispatch(loginUser(data))
                 .unwrap()
                 .then((response: any) => {
-                    // console.log('logged in...');
-                    setIsAuthenticated(userLoggedIn);
                     onSuccessCallback(response);
                 })
                 .catch((error) => {
-                    // setError(error?.response?.data);
                     onErrorCallback(error);
                 });
-
-            // setIsAuthenticated(userLoggedIn)
         },
         []
     );
@@ -77,11 +90,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 .unwrap()
                 .then((response: any) => {
                     persistor.purge();
-                    setIsAuthenticated(userLoggedIn);
                     onSuccessCallback(response);
                 })
                 .catch((error: any) => {
-                    // setError(error?.response?.data);
                     console.error(error);
                     onErrorCallback('');
                 });
@@ -89,21 +100,70 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         []
     );
 
-    useEffect(() => {
-        if (userLoggedIn) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-        }
-    }, [userLoggedIn]);
+    const register = useCallback(
+        (
+            data: RegisterData,
+            onSuccessCallback: SuccessCallback<any>,
+            onErrorCallback: ErrorCallback<any>
+        ) => {
+            dispatch(registerUser(data))
+                .unwrap()
+                .then((response: any) => {
+                    onSuccessCallback(response);
+                })
+                .catch((error) => {
+                    onErrorCallback(error);
+                });
+        },
+        []
+    );
+
+    const forgotPassword = useCallback(
+        (
+            data: EmailData,
+            onSuccessCallback: SuccessCallback<any>,
+            onErrorCallback: ErrorCallback<any>
+        ) => {
+            dispatch(forgotPaswordURL(data))
+                .unwrap()
+                .then((response: any) => {
+                    onSuccessCallback(response);
+                })
+                .catch((error) => {
+                    onErrorCallback(error);
+                });
+        },
+        []
+    );
+
+    const resetPassword = useCallback(
+        (
+            data: NewPassworData,
+            token: string,
+            onSuccessCallback: SuccessCallback<any>,
+            onErrorCallback: ErrorCallback<any>
+        ) => {
+            dispatch(resetPasswordURL({ dataObj: data, token: token }))
+                .unwrap()
+                .then((response: any) => {
+                    onSuccessCallback(response);
+                })
+                .catch((error) => {
+                    onErrorCallback(error);
+                });
+        },
+        []
+    );
 
     const values = useMemo(
         () => ({
             login,
             logout,
-            isAuthenticated,
+            register,
+            forgotPassword,
+            resetPassword,
         }),
-        [login, logout, isAuthenticated]
+        [login, logout, register, forgotPassword, resetPassword]
     );
 
     return (
