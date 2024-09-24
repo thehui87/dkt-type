@@ -20,6 +20,7 @@ import {
 import { IoClose } from 'react-icons/io5';
 import { SliderButton } from './sliderButton';
 import Tooltip from './Tooltip';
+import { ReactComponent as WrongKeyIcon } from '../assets/wrongKey.svg';
 
 const menuStyle = 'cursor-pointer mx-2 leading-10';
 const activeMenuStyle = 'text-active-color underline underline-offset-8';
@@ -81,7 +82,7 @@ const ConfigToolbar = () => {
                 className={`w-full h-full flex justify-center items-center absolute top-0 left-0`}
             > */}
             <ul
-                className={`${openModal ? 'block absolute top-30  m-auto left-0 right-0 max-height-auto' : 'hidden'} lg:relative lg:flex flex-col sm:flex-row primary-color justify-evenly items-center rounded-md text-color p-3 pt-10 lg:pt-3 transition-all ease-in-out duration-300 mb-5 z-20 w-96 lg:w-auto`}
+                className={`${openModal ? 'block absolute top-30  m-auto left-0 right-0 max-height-auto' : 'hidden'} lg:relative lg:flex flex-col sm:flex-row bg-component-color justify-evenly items-center rounded-md text-color p-3 pt-10 lg:pt-3 transition-all ease-in-out duration-300 mb-5 z-20 w-96 lg:w-auto`}
             >
                 {openModal && (
                     <div
@@ -111,7 +112,7 @@ const ConfigToolbar = () => {
                 {/* toolbar separator */}
                 {showLeftTabs && (
                     <li className="w-full flex justify-center py-4 lg:py-0">
-                        <span className="secondary-color w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
+                        <span className="foreground-color w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
                     </li>
                 )}
                 {/* toolbar main menu */}
@@ -129,7 +130,7 @@ const ConfigToolbar = () => {
                 {/* toolbar separator */}
                 {toggleMenuValue !== 'zen' && (
                     <li className="w-full flex justify-center py-4 lg:py-0">
-                        <span className="secondary-color w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
+                        <span className="foreground-color w-5 lg:w-1 h-1 lg:h-5 flex justify-center rounded-sm"></span>
                     </li>
                 )}
                 {/* toolbar right tab */}
@@ -201,11 +202,11 @@ const ConfigToolbar = () => {
                             changeFunction={setToggleShowIncorrectWord}
                             children={
                                 <div className="word-demo text-2xl flex justify-center items-center">
-                                    {showIncorrectWord && (
-                                        <div className="incorrect-word-demo">
-                                            s
-                                        </div>
-                                    )}
+                                    <div
+                                        className={`incorrect-word-demo ${showIncorrectWord ? 'error-color' : 'text-color'}`}
+                                    >
+                                        s
+                                    </div>
                                     <span className="letter-demo incorrect-demo">
                                         A
                                     </span>
@@ -220,7 +221,13 @@ const ConfigToolbar = () => {
                         <SliderButton
                             checkedStatus={showIncorrectCounter}
                             changeFunction={setToggleShowIncorrectCounter}
-                            children={' Wrong Key Counter'}
+                            children={
+                                <div className="flex text-2xl incorrect-color">
+                                    <WrongKeyIcon
+                                        className={`ml-2 ${showIncorrectCounter ? 'error-color' : 'text-color'}`}
+                                    />
+                                </div>
+                            }
                         />
                     </Tooltip>
                 </div>

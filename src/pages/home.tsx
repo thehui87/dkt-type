@@ -424,7 +424,7 @@ const Home = () => {
                     <div
                         ref={outerTextContainerRef}
                         // max-h-40
-                        className={`rounded-lg  ${inputFocus ? 'secondary-color text-color' : 'secondary-color text-color'} text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full`}
+                        className={`rounded-lg  ${inputFocus ? 'bg-component-color text-color' : 'bg-component-color text-color'} text-3xl text-teal-600  min-h-48 max-h-48  overflow-hidden py-2 leading-14 tracking-wider text-left relative w-full`}
                         onClick={onFocus}
                     >
                         {!isDisabled && (
@@ -443,7 +443,7 @@ const Home = () => {
 
                         <input
                             ref={inputRef}
-                            className={`${isDisabled ? 'opacity-80' : 'opacity-30'}  absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none`}
+                            className={`${isDisabled ? 'opacity-100' : 'opacity-0'}  absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none`}
                             value={inputValue}
                             onChange={handleInputChange}
                             onFocus={onFocus}

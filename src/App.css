@@ -1,7 +1,7 @@
 :root {
     --bg-color: #134e4a;
-    --primary-color: #115e59;
-    --secondary-color: #042f2e;
+    --bg-component-color: #115e59;
+    --foreground-color: #042f2e;
     --tertiary-color: #0d9488;
     --caret-color: #fb923c;
     --text-color: #0d9488;
@@ -17,11 +17,11 @@
     background-color: var(--bg-color);
 }
 
-.primary-color {
-    background-color: var(--primary-color);
+.bg-component-color {
+    background-color: var(--bg-component-color);
 }
-.secondary-color {
-    background-color: var(--secondary-color);
+.foreground-color {
+    background-color: var(--foreground-color);
 }
 .tertiary-color {
     background: var(--text-color);

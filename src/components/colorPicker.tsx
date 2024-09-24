@@ -19,7 +19,7 @@ const ColorPicker = () => {
     return (
         <Menu as="div" className="relative inline-block text-left">
             <div>
-                <MenuButton className="inline-flex w-full justify-center items-center gap-x-1.5 rounded-md primary-color px-3 py-2 text-sm font-semibold text-active-color shadow-sm ring-inset ring-0 hover:caret-color">
+                <MenuButton className="inline-flex w-full justify-center items-center gap-x-1.5 rounded-md bg-component-color px-3 py-2 text-sm font-semibold text-active-color shadow-sm ring-inset ring-0 hover:caret-color">
                     <IoColorPaletteSharp />
                     {colorPickerSelection ?? 'Options'}
                     <IoChevronUp
@@ -48,7 +48,7 @@ const ColorPicker = () => {
             <MenuItems
                 transition
                 anchor="top end"
-                className="z-10 mt-2 w-80 origin-top-right rounded-md primary-color shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in h-80 overflow-auto"
+                className="z-10 mt-2 w-80 origin-top-right rounded-md bg-component-color shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in h-80 overflow-auto"
             >
                 <div className="py-1">
                     {colorArray.map((item, index) => {
@@ -56,7 +56,7 @@ const ColorPicker = () => {
                             <MenuItem key={`colorpicker-${item.name}-${index}`}>
                                 <a
                                     href="#"
-                                    className="flex justify-between px-4 py-2 text-active-color data-[focus]:secondary-color data-[focus]:text-active-color hover:bg-slate-50 hover:bg-opacity-20"
+                                    className="flex justify-between px-4 py-2 text-active-color data-[focus]:foreground-color data-[focus]:text-active-color hover:bg-slate-50 hover:bg-opacity-20"
                                     onClick={() => changeThemeColor(item.name)}
                                     onMouseOver={() =>
                                         changeThemeColor(item.name, true)
@@ -80,7 +80,7 @@ const ColorPicker = () => {
                                         {item.name}
                                     </div>
                                     <div
-                                        className="w-20 rounded-full p-2 flex justify-between items-center"
+                                        className="w-20 h-8 rounded-full p-2 flex justify-between items-center"
                                         style={{
                                             backgroundColor: item.color.bg,
                                         }}
@@ -89,7 +89,7 @@ const ColorPicker = () => {
                                             className="w-4 h-4 block rounded-full"
                                             style={{
                                                 backgroundColor:
-                                                    item.color.primary,
+                                                    item.color.bgComponent,
                                             }}
                                         ></span>
                                         <span

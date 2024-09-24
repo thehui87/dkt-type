@@ -3,6 +3,7 @@ import AUTH_API from './auth.api';
 
 interface AuthenticationState {
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    // status: string;
     loading: boolean;
     error: string | null;
     accessToken: string | null;

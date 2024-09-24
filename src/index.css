@@ -106,7 +106,7 @@ code {
 }
 
 .letter.correct {
-    color: #99f6e4;
+    color: var(--text-active-color);
 }
 .incorrect.extra {
     opacity: 0.5;

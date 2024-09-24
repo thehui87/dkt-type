@@ -82,7 +82,7 @@ const Navbar = () => {
     };
 
     return (
-        <div className="flex justify-between py-5 px-3 primary-color text-color border-b-2 border-teal-800 items-center">
+        <div className="flex justify-between py-5 px-3 bg-component-color text-color border-b-2 border-teal-800 items-center">
             <Link
                 to={'/'}
                 className=" flex flex-col py-2 rounded-md border-teal-800"
@@ -98,7 +98,7 @@ const Navbar = () => {
                         </div>
                     </div>
                     <div className="font-bold text-orange-400 text-4xl">]</div>
-                    <div className="font-bold text-white ml-1 text-2xl">
+                    <div className="font-bold text-active-color ml-1 text-2xl">
                         dwarftype
                     </div>
                 </div>

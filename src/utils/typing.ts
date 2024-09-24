@@ -109,7 +109,7 @@ export const getTypingStats = ({
         }
     }
     let timeValue = clock ? timerRef?.current?.mindecimal() : toggleTimerValue;
-    console.log('time', timerRef.current?.mindecimal());
+    // console.log('time', timerRef.current?.mindecimal());
     // dispatch(
     return {
         correctCharacters: correctCharacters,

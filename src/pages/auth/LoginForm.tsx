@@ -75,10 +75,10 @@ const LoginForm = () => {
 
     return (
         <div
-            className=" flex items-center justify-center bg-color"
+            className=" flex items-center justify-center bg-color flex-col"
             style={{ height: 'calc(100vh - 168px)' }}
         >
-            <div className="primary-color p-8 rounded-md shadow-md w-96">
+            <div className="bg-component-color p-8 rounded-md shadow-md w-96">
                 <h2 className="text-2xl font-bold mb-6 text-center text-active-color">
                     Login
                 </h2>

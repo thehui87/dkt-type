@@ -60,17 +60,17 @@ export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
                 // to access the primary color
                 // const primaryColor =
-                //     getComputedStyle(root).getPropertyValue('--primary-color');
+                //     getComputedStyle(root).getPropertyValue('--bg-component');
 
                 // to set new color
                 root.style.setProperty('--bg-color', colorItem[0].color.bg);
                 root.style.setProperty(
-                    '--primary-color',
-                    colorItem[0].color.primary
+                    '--bg-component-color',
+                    colorItem[0].color.bgComponent
                 );
                 root.style.setProperty(
-                    '--secondary-color',
-                    colorItem[0].color.secondary
+                    '--foreground-color',
+                    colorItem[0].color.foreground
                 );
                 root.style.setProperty(
                     '--caret-color',

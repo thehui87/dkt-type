@@ -1,7 +1,6 @@
 import { useDispatch } from 'react-redux';
-import { IoEye, IoEyeOff } from 'react-icons/io5';
 import { Switch } from '@headlessui/react';
-
+import { getContrast } from '../utils/config';
 interface SliderButtonProps {
     checkedStatus: boolean;
     changeFunction: Function;
@@ -14,6 +13,11 @@ const SliderButton = ({
     children,
 }: SliderButtonProps) => {
     const dispatch = useDispatch();
+
+    // get contrast value for the slider button background
+    var style = getComputedStyle(document.documentElement);
+    var contrastValue = getContrast(style.getPropertyValue('--bg-color'));
+
     return (
         <label className="inline-flex items-center cursor-pointer text-color ">
             <input
@@ -27,7 +31,13 @@ const SliderButton = ({
             <Switch
                 checked={checkedStatus}
                 onChange={() => dispatch(changeFunction())}
-                className="group relative flex justify-between items-center h-7 w-14 cursor-pointer rounded-full bg-white/10 p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white data-[checked]:bg-white/10"
+                className={`group relative flex justify-between items-center h-7 w-14 cursor-pointer rounded-full p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white`}
+                style={{
+                    backgroundColor:
+                        contrastValue === 'black'
+                            ? 'rgb(0 0 0 / 0.1)'
+                            : 'rgb(255 255 255 / 0.1)',
+                }}
             >
                 <span
                     aria-hidden="true"

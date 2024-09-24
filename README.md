@@ -145,8 +145,16 @@ If you wish to support further development and feel extra awesome, you can [dona
 -   Pink: (176, 82, 121); #b05279
 -   Blue: (108, 153, 187); #6c99bb
 
-2. Solarized Dark/Light
-3. Dracula
+Main Background: #272822
+Component Background: #1f201b
+Foreground: #F8F8F2
+Primary Text: #e6db74
+Secondary Text: #
+Comment: #75715E
+Error Red: #F92672
+Cursor: #66d9ef
+
+2. Solarized Dark/Light 3. Dracula
 
 -   Background: (40, 42, 54); #282a36
 -   Current Line: (68, 71, 90); #44475a

@@ -134,7 +134,7 @@ const Timer = forwardRef<TimerHandle>((props, ref) => {
         timerRunning: timerOn,
     }));
 
-    return <div>{getTime(endTime, startTime)}</div>;
+    return <div className="w-36 text-right">{getTime(endTime, startTime)}</div>;
 });
 
 export default Timer;
